@@ -31,7 +31,7 @@ If you're not feeling the rugby theme, have a look at the [Streamlit gallery](ht
 ### **Steps**
 
 
-1. `git@github.com:VolcanoBlue13/streamlit_wimd.git`
+1. `git clone git@github.com:VolcanoBlue13/streamlit_wimd.git`
 2. `cd streamlit_wimd`
 3. `conda create --name streamlit_wimd python`
 4. `conda activate streamlit_wimd`
