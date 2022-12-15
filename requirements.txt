@@ -1,7 +1,4 @@
-ipykernel
 streamlit
-geopandas
-shapely
 pandas
 altair
 openpyxl
