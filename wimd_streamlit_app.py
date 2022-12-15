@@ -12,6 +12,7 @@ import altair as alt
 import geopandas as gpd
 import utils
 from PIL import Image
+from itertools import chain
 
 import os
 # -
@@ -42,8 +43,7 @@ def streamlit_wimd():
         wimd_data = wimd_data.merge(regions_lookup, left_on="lsoa_code", right_on="Lower Layer Super Output Area (LSOA) Code", how="right")
         wimd_data['lsoa_code'] = wimd_data['lsoa_code'].fillna(wimd_data.pop('Lower Layer Super Output Area (LSOA) Code'))
         wimd_data.fillna(-1, inplace=True)
-
-        major_grouping_column_data = st.radio("Pick a larger group", ["WIMD", "Population", "FPP", "Rural-Urban"])
+        major_grouping_column_data = st.radio("Pick a larger group", ["Population", "WIMD", "FPP", "Rural-Urban"])
         if major_grouping_column_data == "Population":
             column_data_to_plot = ['number_of_children_0_to_5_2020',
                 'number_of_births_2020_to_mothers_24_and_under_years',
@@ -168,24 +168,149 @@ def streamlit_wimd():
         
         specified_feature_to_plot = column_selection + encoding_type
         alternative_condition = 'datum.' + column_selection + " > 0"
-       
+        
+        click = alt.selection_multi(fields=['LSOA Name'])
+
         map = alt.Chart(regions).mark_geoshape(stroke="white").transform_lookup(
             lookup='properties.LSOA11Code',
-            from_= alt.LookupData(wimd_data, 'lsoa_code', [column_selection,'Rural/ Urban Settlement Classification (RU) Name',"Local Authority (LA) Name", "Economic Region/ Economic Action Plan Area (EAP) Name"]),
+            from_= alt.LookupData(wimd_data, 'lsoa_code', [column_selection,"LSOA Name", 'Rural/ Urban Settlement Classification (RU) Name',"Local Authority (LA) Name", "Economic Region/ Economic Action Plan Area (EAP) Name"]),
         ).transform_filter(alt.FieldOneOfPredicate(field='properties.LSOA11Code', oneOf=lsoas_to_plot)).encode(
         tooltip=alt.Tooltip(['properties.lsoa11name:N',"Local Authority (LA) Name:N","Rural/ Urban Settlement Classification (RU) Name:N"]),
-        color=alt.condition(alternative_condition, specified_feature_to_plot, alt.value("lightgrey"))
-        ).properties(
-            width=1000,
-            height=800
-        ).configure_view(strokeWidth=0)
+        color=alt.condition(alternative_condition, specified_feature_to_plot, alt.value("lightgrey")),
+        opacity=alt.condition(click, alt.value(1), alt.value(0.2))
+        ).add_selection(click).properties(
+            width=700,
+            height=500
+        )
+
+        ascending_option = st.radio("Select ascending or descending", ["Ascending", "Descending"])
+        no_to_show = st.slider('How many LSOAs to show', 0, 5, 50)
+        if ascending_option == "Ascending":
+            ascending_val = True
+        else:
+            ascending_val = False
+        data_for_bar_chart = wimd_data[wimd_data.lsoa_code.isin(utils.LSOA_IN_EXTREME_10)]
+        data_for_bar_chart = data_for_bar_chart.sort_values(by = column_selection, ascending=ascending_val)[:no_to_show]
+        bar_chart = alt.Chart(data_for_bar_chart).mark_bar(color=utils.NESTA_COLOURS[1]).encode(
+            x = column_selection,
+            y = alt.Y("LSOA Name", sort="-x"),
+            opacity=alt.condition(click, alt.value(1), alt.value(0.2))
+        ).add_selection(click).properties(width=400, height=300)
 
 
-
-        st.altair_chart(map, use_container_width=False)
+        st.altair_chart(alt.hconcat(map,bar_chart).configure_view(strokeWidth=0).resolve_scale("independent"), use_container_width=False)
     with st.expander("Dataframe"):
-        #selections_for_dataframe = st.multiselect()
-        st.dataframe(wimd_data)
+        major_grouping_column_data_df = st.multiselect("Pick a larger group for dataframe", ["Population", "WIMD", "FPP", "Rural-Urban"])
+        dataframe_to_plot = wimd_data[wimd_data.lsoa_code.isin(utils.LSOA_IN_EXTREME_10)]
+        columns_for_df = []
+        if "Population" in major_grouping_column_data_df:
+            columns_for_df.append(['number_of_children_0_to_5_2020',
+                'number_of_births_2020_to_mothers_24_and_under_years',
+                'number_of_births_2020_to_mothers_25_to_34_years',
+                'number_of_births_2020_to_mothers_35_and_over_years',
+                'total_number_of_births_2020',
+                'population_2020_all_ages',
+                'birth_rate_per_1000_2020',
+                'number_of_births_2019_to_mothers_24_and_under_years',
+                'number_of_births_2019_to_mothers_25_to_34_years',
+                'number_of_births_2019_to_mothers_35_and_over_years',
+                'total_number_of_births_2019',
+                'population_2019_all_ages',
+                'birth_rate_per_1000_2019',
+                'median_age_2019',
+                'number_of_births_2018_to_mothers_24_and_under_years',
+                'number_of_births_2018_to_mothers_25_to_34_years',
+                'number_of_births_2018_to_mothers_35_and_over_years',
+                'total_number_of_births_2018',
+                'population_2018_all_ages',
+                'birth_rate_per_1000_2018',
+                'number_of_births_2017_to_mothers_24_and_under_years',
+                'number_of_births_2017_to_mothers_25_to_34_years',
+                'number_of_births_2017_to_mothers_35_and_over_years',
+                'total_number_of_births_2017',
+                'population_2017_all_ages',
+                'birth_rate_per_1000_2017', 
+                'change_birth_rates_18_to_20',
+                'change_birth_rates_17_to_20',
+                'birthrate_categories_2020'])
+        elif "WIMD" in major_grouping_column_data_df:
+            columns_for_df.append(['wimd_decile',
+                'wimd_income_deprivation_count_0_to_4',
+                'wimd_income_domain_deciles',
+                'wimd_income_domain_people_in_income_deprivation_%',
+                'wimd_employment_domain_deciles',
+                'wimd_employment_domain_working_age_people_in_employment_deprivation_%',
+                'wimd_health_domain_deciles',
+                'wimd_health_domain_gp_recorded_chronic_condition_rate_per_100',
+                'wimd_health_domain_limiting_long_term_illness_rate_per_100',
+                'wimd_health_domain_premature_death_rate_per_100,000',
+                'wimd_health_domain_gp_recorded_mental_health_condition_rate_per_100',
+                'wimd_health_domain_cancer_incidence_rate_per_100,000',
+                'wimd_health_domain_low_birth_weight_live_single_births_less_than_2.5kg_%',
+                'wimd_health_domain_children_aged_4_to_5_who_are_obese_%',
+                'wimd_education_domain_deciles',
+                'wimd_education_domain_foundation_phase_average_point_score',
+                'wimd_education_domain_key_stage_2_average_point_score',
+                'wimd_education_domain_key_stage_4_average_point_score',
+                'wimd_education_domain_repeat_absenteeism_%',
+                'wimd_education_domain_key_stage_4_leavers_entering_higher_education_%',
+                'wimd_education_domain_adults_aged_25_to_64_with_no_qualifications_%',
+                'wimd_access_to_services_domain_deciles',
+                'wimd_access_to_services_domain_%_unavailability_of_broadband_at_30mb_s',
+                'wimd_access_to_services_domain_average_public_return_travel_time_to_a_pharmacy_mins',
+                'wimd_access_to_services_domain_average_public_return_travel_time_to_a_food_shop_mins',
+                'wimd_access_to_services_domain_average_public_return_travel_time_to_a_gp_surgery_mins',
+                'wimd_access_to_services_domain_average_public_return_travel_time_to_a_post_office_mins',
+                'wimd_access_to_services_domain_average_public_return_travel_time_to_a_primary_school_mins',
+                'wimd_access_to_services_domain_average_public_return_travel_time_to_a_public_library_mins',
+                'wimd_access_to_services_domain_average_public_return_travel_time_to_a_sports_facility_mins',
+                'wimd_access_to_services_domain_average_public_return_travel_time_to_a_secondary_school_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_pharmacy_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_food_shop_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_gp_surgery_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_post_office_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_primary_school_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_public_library_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_sports_facility_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_secondary_school_mins',
+                'wimd_access_to_services_domain_average_private_return_travel_time_to_a_petrol_station_mins',
+                'wimd_housing_domain_deciles',
+                'wimd_housing_domain_people_in_overcrowded_households_%',
+                'wimd_housing_domain_likelihood_of_poor_quality_housing_%',
+                'wimd_housing_domain_likelihood_of_housing_containing_serious_hazards_%',
+                'wimd_housing_domain_likelihood_of_housing_being_in_disrepair_%',
+                'wimd_physical_environment_domain_deciles',
+                'wimd_physical_environment_domain_population_weighted_average_concentration_value_for_no2',
+                'wimd_physical_environment_domain_population_weighted_average_concentration_value_for_particulates_<_10_µm',
+                'wimd_physical_environment_domain_population_weighted_average_concentration_value_for_particulates_<_2.5_µm',
+                'wimd_physical_environment_domain_households_at_risk_of_flooding_score',
+                'wimd_physical_environment_domain_proximity_to_accessible_natural_green_space_score_%_of_households',
+                'wimd_physical_environment_domain_ambient_green_space_score',
+                'wimd_community_safety_domain_deciles',
+                'wimd_community_safety_domain_police_recorded_criminal_damage_rate_per_100',
+                'wimd_community_safety_domain_police_recorded_violent_crime_rate_per_100',
+                'wimd_community_safety_domain_anti_social_behaviour_rate_per_100',
+                'wimd_community_safety_domain_police_recorded_burglary_rate_per_100',
+                'wimd_community_safety_domain_police_recorded_theft_rate_per_100',
+                'wimd_community_safety_domain_fire_incidences_rate_per_100'])
+        elif "FPP" in major_grouping_column_data_df:
+            columns_for_df.append(['mean_fpp_score',
+                'Mean FPP Score',
+                'fpp_mean_difference',
+                'fpp_mean_difference_category'])
+        elif "Rural-Urban" in major_grouping_column_data_df:
+            columns_for_df.append(['rural_urban_settlement_classification_ru_name'])
+        if len(columns_for_df) != 0:
+            columns_for_df = list(chain(*columns_for_df))
+        selections_for_dataframe = st.multiselect("Choose one or more columns for dataframe", columns_for_df)
+        if len(selections_for_dataframe) == 0: 
+            selections_for_dataframe = ["LSOA Name", "Local Authority (LA) Name", "Rural/ Urban Settlement Classification (RU) Name", "fpp_performance_vsmean"]
+        else:
+            selections_for_dataframe = ["LSOA Name", "Local Authority (LA) Name", "Rural/ Urban Settlement Classification (RU) Name", "fpp_performance_vsmean"] + selections_for_dataframe
+        dataframe_to_plot=dataframe_to_plot[selections_for_dataframe]
+        dataframe_to_plot.reset_index(inplace=True)
+        column_number_to_highlight = len(selections_for_dataframe)
+        st.dataframe(dataframe_to_plot[selections_for_dataframe].style.apply(lambda x: ['background-color: mistyrose']*column_number_to_highlight if x.fpp_performance_vsmean == "Underperforming" else ['background-color: honeydew']*column_number_to_highlight, axis=1))
 
 pwd = st.sidebar.text_input("Password:", type='password')
 if pwd == st.secrets["PASSWORD"]:
