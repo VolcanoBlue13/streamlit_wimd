@@ -1,4 +1,9 @@
 streamlit
 pandas
 altair
+<<<<<<< HEAD
 numpy
+=======
+openpyxl
+numpy
+>>>>>>> 010b3770d32dfa7c88d3699e962cc64096fa4068

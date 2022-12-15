@@ -31,10 +31,10 @@ If you're not feeling the rugby theme, have a look at the [Streamlit gallery](ht
 ### **Steps**
 
 
-1. `git clone git@github.com:nestauk/dap_tutorials.git`
-2. `cd dap_tutorials/streamlit_demo`
-3. `conda create --name streamlit_demo python`
-4. `conda activate streamlit_demo`
+1. `git clone git@github.com:VolcanoBlue13/streamlit_wimd.git`
+2. `cd streamlit_wimd`
+3. `conda create --name streamlit_wimd python`
+4. `conda activate streamlit_wimd`
 5. `pip install -r requirements.txt`
 
 **Now we need to add in the secrets file so the password will work.**
@@ -44,13 +44,13 @@ If you're not feeling the rugby theme, have a look at the [Streamlit gallery](ht
 
 7. In the `.streamlit/secrets.toml` file create a password so the file should look like this:
 ```
-PASSWORD = "streamlitdemo"
+PASSWORD = <insert password in quotation marks here>
 ```
-8. We can now run the app `streamlit run streamlit_six_nations_demo.py`
+8. We can now run the app `streamlit run wimd_streamlit_app.py`
 
 
 It should automatically open in a web browser, if not, just copy and paste the link across.
 
 You can edit the source code (`streamlit_six_nations_demo.py`) in your favourite Python editor, and when you save it, it should automatically prompt you to rerun the Streamlit app on the web page.
 
-**Hope you all enjoy and have fun getting creative with Streamlit!!** :tada:
+**And now you can explore the Welsh IMD data** :tada:
