@@ -22,11 +22,7 @@ There is a handy [cheat sheet](https://docs.streamlit.io/library/cheatsheet) onl
 - [You can be very specific in the layout with containers](https://docs.streamlit.io/library/api-reference/layout).
 
 
-## **Instructions for the have-a-go**
-
-For the have-a-go, we're just going to edit the existing app and you can try adding in tables, new user selections or new graphs as this is the easiest way to learn Streamlit.
-
-If you're not feeling the rugby theme, have a look at the [Streamlit gallery](https://streamlit.io/gallery) and you can copy one of their apps (just click `view app source code`) and try and edit that.
+## **Instructions for getting started**
 
 ### **Steps**
 
@@ -51,6 +47,6 @@ PASSWORD = <insert password in quotation marks here>
 
 It should automatically open in a web browser, if not, just copy and paste the link across.
 
-You can edit the source code (`streamlit_six_nations_demo.py`) in your favourite Python editor, and when you save it, it should automatically prompt you to rerun the Streamlit app on the web page.
+You can edit the source code (`wimd_streamlit_app.py`) in your favourite Python editor, and when you save it, it should automatically prompt you to rerun the Streamlit app on the web page.
 
 **And now you can explore the Welsh IMD data** :tada:
