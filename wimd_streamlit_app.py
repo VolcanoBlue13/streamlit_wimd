@@ -213,10 +213,10 @@ def streamlit_wimd():
         # We then can filter the data if you only want to have a selection of LSOAs.
         ).transform_filter(alt.FieldOneOfPredicate(field='properties.LSOA11Code', oneOf=lsoas_to_plot)).encode(
         # As with normal altair functions, we can add a tooltip using any column in the topojson file or one of the columns we've brought across from the other data.
-        tooltip=alt.Tooltip([specified_feature_to_plot, 'properties.lsoa11name:N',"Local Authority (LA) Name:N","Rural/ Urban Settlement Classification (RU) Name:N", 'wimd_decile:N']),
+        tooltip=[alt.Tooltip(specified_feature_to_plot, title=column_selection), alt.Tooltip('lsoa_name_1:N', title="LSOA name (1)"), alt.Tooltip("Local Authority (LA) Name:N",title="LA name"), alt.Tooltip("Rural/ Urban Settlement Classification (RU) Name:N", title="RU name"), alt.Tooltip('wimd_decile:N', title="WIMD decile")],
         # We've used alt.condition so altair knows to plot every LSOA that's not got a value as "lightgrey", we set the condition as < 0 as we filled the NaNs as -1. Without this line, it would only
         # plot the LSOAs that have a value.
-        color=alt.condition(alternative_condition, alt.Color(specified_feature_to_plot, legend=alt.Legend(orient='none', legendX=-1, title=column_selection)), alt.value("lightgrey")),
+        color=alt.condition(alternative_condition, alt.Color(specified_feature_to_plot, legend=alt.Legend(orient='none', legendX=-1, title=column_selection), scale=alt.Scale(scheme='yellowgreenblue')), alt.value("lightgrey")),
         # This condition is dependent on the "click" selection. We want the opacity to be fully opaque normally, but as soon as the selection is in place, we want the rest of the LSOAs to be 0.2 opacity.
         opacity=alt.condition(click, alt.value(1), alt.value(0.2))
         # We need this add_selection to ensure the "click" is added to the choropleth.
