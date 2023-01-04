@@ -257,7 +257,7 @@ def streamlit_wimd():
         comparator_bar_chart = alt.Chart(comparator_data).mark_bar(color=colours[1]).encode(
             x = alt.X(column_selection_actual_column_name, title=column_selection),
             y = alt.Y("comparator_group", sort=["All LSOAs", "IMD Decile 1", "IMD Decile 2", "IMD Decile 3", "IMD Decile 4", "IMD Decile 5", "IMD Decile 6", "IMD Decile 7", "IMD Decile 8", "IMD Decile 9", "IMD Decile 10"], title='Comparator Group')
-        ).add_selection(click).properties(width=400, height=175)
+        )
 
         bar_charts = alt.vconcat(bar_chart,comparator_bar_chart)
 
