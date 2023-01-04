@@ -250,7 +250,7 @@ def streamlit_wimd():
             x = alt.X(column_selection_actual_column_name, title=column_selection),
             y = alt.Y("lsoa_name_1", sort="-x", title="LSOA name (1)"),
             opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
-            tooltip = [alt.Tooltip(column_selection_actual_column_name, title=column_selection), alt.Tooltip("lsoa_name_1", title="LSOA name (1)"), alt.Tooltip("Region"), alt.Tooltip("fpp_performance", title="FPP performance"), alt.Tooltip("wimd_decile", title="WIMD decile")]
+            tooltip = [alt.Tooltip(column_selection_actual_column_name, title=column_selection), alt.Tooltip("lsoa_name_1", title="LSOA name (1)"), alt.Tooltip("Local Authority (LA) Name", title="LA name"), alt.Tooltip("Region"), alt.Tooltip("fpp_performance", title="FPP performance"), alt.Tooltip("wimd_decile", title="WIMD decile")]
         ).add_selection(click).properties(width=400, height=400)
 
         comparator_data = pd.read_csv(f'{current_dir}/datasets/comparator_data.csv')
