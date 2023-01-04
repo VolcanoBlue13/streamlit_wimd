@@ -39,7 +39,7 @@ with header:
 # As it's password protected, we've created a function here which means the app can only run if you've typed the password in.
 def streamlit_wimd():
     # This sets a spinner so we know that the report is updating as we change the user selections.
-    with st.spinner('Updating Report...'):
+    with st.expander("Choropleth map and bar charts"):
         # I've uploaded the dataset to GitHub so it can download everything it git clone and make it work. You can change the dataset locally and it should still work.
         wimd_data = pd.read_csv(f'{current_dir}/datasets/wimd_data.csv')
         regions_lookup = pd.read_csv(f'{current_dir}/datasets/welsh_code_lookups.csv')
