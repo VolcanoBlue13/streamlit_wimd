@@ -248,7 +248,7 @@ def streamlit_wimd():
         # This plots a normal bar chart with the added opacity "alt.condition". This is the same as above.
         bar_chart = alt.Chart(data_for_bar_chart).mark_bar(color=utils.NESTA_COLOURS[1]).encode(
             x = alt.X(column_selection_actual_column_name, title=column_selection),
-            y = alt.Y("lsoa_name_1", sort="-x", title="LSOA name (1)"),
+            y = alt.Y("lsoa_name_1", sort="-x", title="LSOA name (1)", axis = alt.Axis(labelOverlap=False)),
             opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
             tooltip = [alt.Tooltip(column_selection_actual_column_name, title=column_selection), alt.Tooltip("lsoa_name_1", title="LSOA name (1)"), alt.Tooltip("Local Authority (LA) Name", title="LA name"), alt.Tooltip("Region"), alt.Tooltip("fpp_performance", title="FPP performance"), alt.Tooltip("wimd_decile", title="WIMD decile")]
         ).add_selection(click).properties(width=400, height=400)
