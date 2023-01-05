@@ -32,17 +32,18 @@ There is a handy [cheat sheet](https://docs.streamlit.io/library/cheatsheet) onl
 3. `conda create --name streamlit_wimd python`
 4. `conda activate streamlit_wimd`
 5. `pip install -r requirements.txt`
+6. `pip install streamlit`
 
 **Now we need to add in the secrets file so the password will work.**
 
-6. `mkdir .streamlit && touch .streamlit/secrets.toml`
+7. `mkdir .streamlit && touch .streamlit/secrets.toml`
 
 
-7. In the `.streamlit/secrets.toml` file create a password so the file should look like this:
+8. In the `.streamlit/secrets.toml` file create a password so the file should look like this:
 ```
 PASSWORD = <insert password in quotation marks here>
 ```
-8. We can now run the app `streamlit run wimd_streamlit_app.py`
+9. We can now run the app `streamlit run wimd_streamlit_app.py`
 
 
 It should automatically open in a web browser, if not, just copy and paste the link across.
