@@ -17,6 +17,11 @@ import os
 
 # -
 
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
 current_dir = os.getcwd()
 alt.themes.register("nestafont", utils.nestafont)
 alt.themes.enable("nestafont")
@@ -665,7 +670,7 @@ def streamlit_wimd():
             )
         )
 
-        csv = utils.convert_df(dataframe_to_plot[selections_for_dataframe])
+        csv = convert_df(dataframe_to_plot[selections_for_dataframe])
 
         st.download_button(
             label="Download data as CSV",
