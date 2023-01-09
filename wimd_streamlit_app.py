@@ -665,6 +665,15 @@ def streamlit_wimd():
             )
         )
 
+        csv = utils.convert_df(dataframe_to_plot[selections_for_dataframe])
+
+        st.download_button(
+            label="Download data as CSV",
+            data=csv,
+            file_name='filtered_WIMD_dataset.csv',
+            mime='text/csv',
+        )
+
     # code to add correlation matrices
     matrix_data_to_plot = wimd_data.rename(
         columns=dict((v, k) for k, v in utils.COLUMN_NAME_MAPPINGS.items())
