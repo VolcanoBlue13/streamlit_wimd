@@ -156,7 +156,7 @@ def streamlit_wimd():
                 "WIMD community safety domain - police recorded theft (rate per 100)",
                 "WIMD community safety domain - fire incidences (rate per 100)",
             ]
-        elif major_grouping_column_data == "FPP":
+        elif major_grouping_column_data == "Foundation phase profile":
             # And again with the FPP data
             column_data_to_plot = ["Foundation phase (mean difference)"]
             # And I thought this was useful but couldn't fit it into any other larger group
