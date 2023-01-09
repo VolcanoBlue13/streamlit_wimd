@@ -44,17 +44,18 @@ def streamlit_wimd():
     # This sets a spinner so we know that the report is updating as we change the user selections.
     with st.spinner("Updating Report..."):
         # I've uploaded the dataset to GitHub so it can download everything it git clone and make it work. You can change the dataset locally and it should still work.
-        wimd_data = pd.read_csv(f"{current_dir}/datasets/wimd_data.csv")
+        wimd_data = pd.read_csv(f"{current_dir}/datasets/wimd_data_new.csv")
         regions_lookup = pd.read_csv(f"{current_dir}/datasets/welsh_code_lookups.csv")
         wimd_data = wimd_data.merge(
             regions_lookup,
             left_on="lsoa_code",
             right_on="Lower Layer Super Output Area (LSOA) Code",
-            how="right",
+            how="left",
         )
+
         # This radio button lets you pick a larger group so you're not overwhelmed by all the possible categories
         major_grouping_column_data = st.radio(
-            "Pick a larger group", ["Population", "WIMD", "FPP", "Rural-Urban"]
+            "Pick a larger group", ["Population", "WIMD", "Foundation phase profile", "Rural-Urban"]
         )
         # Once a user has picked a subgroup it assigns it to the variable major_grouping_column_data.
         if major_grouping_column_data == "Population":
@@ -228,7 +229,7 @@ def streamlit_wimd():
         column_selection_actual_column_name = columns[column_selection]
         # You need to set the type for altair to plot, so I've created an encoding type if/else. If it's going to be text, we want it to be :N, if it's a decile we want it to be :O and if it's a number
         # we want it to be :Q
-        columns_nominal = ["rural_urban_classification", "fpp_performance"]
+        columns_nominal = ["rural_urban_classification", "rural_urban", "fpp_performance", "Rural/ Urban Settlement Classification (RU) Name"]
         if column_selection_actual_column_name in columns_nominal:
             encoding_type = ":N"
         elif "decile" in column_selection_actual_column_name:
@@ -238,7 +239,6 @@ def streamlit_wimd():
 
         # This allows you to create the column_name:Q variable for altair
         specified_feature_to_plot = column_selection_actual_column_name + encoding_type
-
         # This is an alternative condition that I've set up so it plots the LSOAs where there is no value. Earlier on I set the LSOAs which weren't in the original dataset to be -1,
         # so anything that is above 0 we want it to plot normally (i.e. with a colour scale), but if it's got no value, we want it to be a light grey. This sets up the query for later
         # on.
@@ -268,8 +268,8 @@ def streamlit_wimd():
                     [data_for_map_performance, data_for_map_everything_else], axis=0
                 )
             else:
-                data_for_map_everything_else_performance = data_for_map_performance[
-                    ~data_for_map_performance["fpp_performance"].isin(
+                data_for_map_everything_else_performance = data_for_map[
+                    ~data_for_map["fpp_performance"].isin(
                         performance_selections
                     )
                 ]
