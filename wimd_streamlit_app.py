@@ -17,10 +17,12 @@ import os
 
 # -
 
+
 @st.cache
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+    return df.to_csv().encode("utf-8")
+
 
 current_dir = os.getcwd()
 alt.themes.register("nestafont", utils.nestafont)
@@ -60,7 +62,8 @@ def streamlit_wimd():
 
         # This radio button lets you pick a larger group so you're not overwhelmed by all the possible categories
         major_grouping_column_data = st.radio(
-            "Pick a larger group", ["Population", "WIMD", "Foundation phase profile", "Rural-Urban"]
+            "Pick a larger group",
+            ["Population", "WIMD", "Foundation phase profile", "Rural-Urban"],
         )
         # Once a user has picked a subgroup it assigns it to the variable major_grouping_column_data.
         if major_grouping_column_data == "Population":
@@ -234,7 +237,12 @@ def streamlit_wimd():
         column_selection_actual_column_name = columns[column_selection]
         # You need to set the type for altair to plot, so I've created an encoding type if/else. If it's going to be text, we want it to be :N, if it's a decile we want it to be :O and if it's a number
         # we want it to be :Q
-        columns_nominal = ["rural_urban_classification", "rural_urban", "fpp_performance", "Rural/ Urban Settlement Classification (RU) Name"]
+        columns_nominal = [
+            "rural_urban_classification",
+            "rural_urban",
+            "fpp_performance",
+            "Rural/ Urban Settlement Classification (RU) Name",
+        ]
         if column_selection_actual_column_name in columns_nominal:
             encoding_type = ":N"
         elif "decile" in column_selection_actual_column_name:
@@ -274,9 +282,7 @@ def streamlit_wimd():
                 )
             else:
                 data_for_map_everything_else_performance = data_for_map[
-                    ~data_for_map["fpp_performance"].isin(
-                        performance_selections
-                    )
+                    ~data_for_map["fpp_performance"].isin(performance_selections)
                 ]
                 data_for_map_everything_else_performance[
                     column_selection_actual_column_name
@@ -463,205 +469,214 @@ def streamlit_wimd():
     # This adds an expander in so you can hide the dataframe and just have the bar charts.
     with st.expander("Dataframe"):
         # The same as before, we want to have the larger groupings first so you're not overwhelmed by choice
-        major_grouping_column_data_df = st.multiselect(
-            "Pick a larger group for dataframe",
-            ["Population", "WIMD", "FPP", "Rural-Urban"],
-        )
-        # Again we only want the LSOAs which are in the WIMD data.
-        dataframe_to_plot = wimd_data.rename(
-            columns=dict((v, k) for k, v in utils.COLUMN_NAME_MAPPINGS.items())
-        )
-        dataframe_to_plot = dataframe_to_plot.rename(
-            columns={"Economic Region/ Economic Action Plan Area (EAP) Name": "Region"}
-        )
-        # This is an empty dataframe so we can add column selection choices to it.
-        columns_for_df = []
-        if "Population" in major_grouping_column_data_df:
-            # This is me selecting certain columns which I feel come under the wider group of Population. These huge arrays could go in utils but thought it would be useful to see them here.
-            columns_for_df.append(
-                [
-                    "Number of children 0-5 (2020)",
-                    "Number of births to mothers aged 24 and under (2020)",
-                    "Number of births to mothers aged 25-34 (2020)",
-                    "Number of births to mothers aged 35 and over (2020)",
-                    "Total number of births (2020)",
-                    "Population - all ages (2020)",
-                    "Birth rate per 1000 (2020)",
-                    "Number of births to mothers aged 24 and under (2019)",
-                    "Number of births to mothers aged 25-34 (2019)",
-                    "Number of births to mothers aged 35 and over (2019)",
-                    "Total number of births (2019)",
-                    "Population - all ages (2019)",
-                    "Birth rate per 1000 (2019)",
-                    "Number of births to mothers aged 24 and under (2018)",
-                    "Number of births to mothers aged 25-34 (2018)",
-                    "Number of births to mothers aged 35 and over (2018)",
-                    "Total number of births (2018)",
-                    "Population - all ages (2018)",
-                    "Birth rate per 1000 (2018)",
-                    "Number of births to mothers aged 24 and under (2017)",
-                    "Number of births to mothers aged 25-34 (2017)",
-                    "Number of births to mothers aged 35 and over (2017)",
-                    "Total number of births (2017)",
-                    "Population - all ages (2017)",
-                    "Birth rate per 1000 (2017)",
-                ]
+        with st.form(key="Selecting major groupings"):
+            major_grouping_column_data_df = st.multiselect(
+                "Pick a larger group for dataframe",
+                ["Population", "WIMD", "FPP", "Rural-Urban"],
             )
-        if "WIMD" in major_grouping_column_data_df:
-            # Same here but with the WIMD data
-            columns_for_df.append(
-                [
-                    "Number of children living in income deprivation aged 0-4 years old (2019)",
-                    "WIMD income domain deciles",
-                    "WIMD income domain - percentage of people in income deprivation",
-                    "WIMD employment domain deciles",
-                    "WIMD employment domain - percentage of people in employment deprivation",
-                    "WIMD health domain deciles",
-                    "WIMD health domain - GP recorded chronic condition rate (per 100)",
-                    "WIMD health domain - limiting long-term illness rate (per 100)",
-                    "WIMD health domain - premature death rate (per 100,000)",
-                    "WIMD health domain - GP recorded mental health condition rate (per 100)",
-                    "WIMD health domain - cancer incidence rate (per 100,000)",
-                    "WIMD health domain - low birth weight, live single births less than 2.5 kg (percentage)",
-                    "WIMD health domain - percentage of children aged 4-5 who are obese",
-                    "WIMD education domain deciles",
-                    "WIMD education domain - foundation phase average point score",
-                    "WIMD education domain - key stage 2 average point score",
-                    "WIMD education domain - key stage 4 average point score",
-                    "WIMD education domain - repeat absenteeism percentage",
-                    "WIMD education domain - percentage of key stage 4 leavers entering higher education",
-                    "WIMD education domain - percentage of adults aged 25-64 with no qualifications",
-                    "WIMD access to services domain deciles",
-                    "WIMD access to services domain - percentage unavailability of broadband at 30 mb/s",
-                    "WIMD access to services domain - average public return traveltime to a pharmacy (mins)",
-                    "WIMD access to services domain - average public return traveltime to a food shop (mins)",
-                    "WIMD access to services domain - average public return traveltime to a GP surgery (mins)",
-                    "WIMD access to services domain - average public return traveltime to a post office (mins)",
-                    "WIMD access to services domain - average public return traveltime to a primary school (mins)",
-                    "WIMD access to services domain - average public return traveltime to a public library (mins)",
-                    "WIMD access to services domain - average public return traveltime to a sports facility (mins)",
-                    "WIMD access to services domain - average public return traveltime to a secondary school (mins)",
-                    "WIMD access to services domain - average private return traveltime to a pharmacy (mins)",
-                    "WIMD access to services domain - average private return traveltime to a food shop (mins)",
-                    "WIMD access to services domain - average private return traveltime to a GP surgery (mins)",
-                    "WIMD access to services domain - average private return traveltime to a post office (mins)",
-                    "WIMD access to services domain - average private return traveltime to a primary school (mins)",
-                    "WIMD access to services domain - average private return traveltime to a public library (mins)",
-                    "WIMD access to services domain - average private return traveltime to a sports facility (mins)",
-                    "WIMD access to services domain - average private return traveltime to a secondary school (mins)",
-                    "WIMD access to services domain - average private return traveltime to a petrol station (mins)",
-                    "WIMD housing domain deciles",
-                    "WIMD housing domain - percentage of people in overcrowded households",
-                    "WIMD housing domain - percentage likelihood of poor quality housing",
-                    "WIMD housing domain - percentage likelihood of housing containing serious hazards",
-                    "WIMD housing domain - percentage likelihood of housing being in disrepair",
-                    "WIMD physical environment domain deciles",
-                    "WIMD physical environment domain - population weighted average concentration value for no2",
-                    "WIMD physical environment domain - population weighted average concentration value for particulates <10μm",
-                    "WIMD physical environment domain - population weighted average concentration value for particulates <2.5μm",
-                    "WIMD physical environment domain - households at risk of flooding score",
-                    "WIMD physical environment domain - proximity to accessible natural green space score (percentage of households)",
-                    "wimd_physical_environment_domain_proximity_to_accessible_natural_green_space_score_percentage_of_households",
-                    "WIMD physical environment domain - ambient green space score",
-                    "WIMD community safety domain deciles",
-                    "WIMD community safety domain - police recorded criminal damage (rate per 100)",
-                    "WIMD community safety domain - police recorded violent crime (rate per 100)",
-                    "WIMD community safety domain - police recorded anit-social behaviour (rate per 100)",
-                    "WIMD community safety domain - police recorded burglary (rate per 100)",
-                    "WIMD community safety domain - police recorded theft (rate per 100)",
-                    "WIMD community safety domain - fire incidences (rate per 100)",
-                ]
+            # Again we only want the LSOAs which are in the WIMD data.
+            dataframe_to_plot = wimd_data.rename(
+                columns=dict((v, k) for k, v in utils.COLUMN_NAME_MAPPINGS.items())
             )
-        if "FPP" in major_grouping_column_data_df:
-            # And again with the FPP data
-            columns_for_df.append(
-                [
-                    "Mean foundation phase score",
-                    "Mean foundation phase score (rounded)",
-                    "Foundation phase (mean difference)",
+            dataframe_to_plot = dataframe_to_plot.rename(
+                columns={
+                    "Economic Region/ Economic Action Plan Area (EAP) Name": "Region"
+                }
+            )
+            # This is an empty dataframe so we can add column selection choices to it.
+            submit_button = st.form_submit_button(label="Run")
+        with st.form(key="Selecting columns"):
+            columns_for_df = []
+            if "Population" in major_grouping_column_data_df:
+                # This is me selecting certain columns which I feel come under the wider group of Population. These huge arrays could go in utils but thought it would be useful to see them here.
+                columns_for_df.append(
+                    [
+                        "Number of children 0-5 (2020)",
+                        "Number of births to mothers aged 24 and under (2020)",
+                        "Number of births to mothers aged 25-34 (2020)",
+                        "Number of births to mothers aged 35 and over (2020)",
+                        "Total number of births (2020)",
+                        "Population - all ages (2020)",
+                        "Birth rate per 1000 (2020)",
+                        "Number of births to mothers aged 24 and under (2019)",
+                        "Number of births to mothers aged 25-34 (2019)",
+                        "Number of births to mothers aged 35 and over (2019)",
+                        "Total number of births (2019)",
+                        "Population - all ages (2019)",
+                        "Birth rate per 1000 (2019)",
+                        "Number of births to mothers aged 24 and under (2018)",
+                        "Number of births to mothers aged 25-34 (2018)",
+                        "Number of births to mothers aged 35 and over (2018)",
+                        "Total number of births (2018)",
+                        "Population - all ages (2018)",
+                        "Birth rate per 1000 (2018)",
+                        "Number of births to mothers aged 24 and under (2017)",
+                        "Number of births to mothers aged 25-34 (2017)",
+                        "Number of births to mothers aged 35 and over (2017)",
+                        "Total number of births (2017)",
+                        "Population - all ages (2017)",
+                        "Birth rate per 1000 (2017)",
+                    ]
+                )
+            if "WIMD" in major_grouping_column_data_df:
+                # Same here but with the WIMD data
+                columns_for_df.append(
+                    [
+                        "Number of children living in income deprivation aged 0-4 years old (2019)",
+                        "WIMD income domain deciles",
+                        "WIMD income domain - percentage of people in income deprivation",
+                        "WIMD employment domain deciles",
+                        "WIMD employment domain - percentage of people in employment deprivation",
+                        "WIMD health domain deciles",
+                        "WIMD health domain - GP recorded chronic condition rate (per 100)",
+                        "WIMD health domain - limiting long-term illness rate (per 100)",
+                        "WIMD health domain - premature death rate (per 100,000)",
+                        "WIMD health domain - GP recorded mental health condition rate (per 100)",
+                        "WIMD health domain - cancer incidence rate (per 100,000)",
+                        "WIMD health domain - low birth weight, live single births less than 2.5 kg (percentage)",
+                        "WIMD health domain - percentage of children aged 4-5 who are obese",
+                        "WIMD education domain deciles",
+                        "WIMD education domain - foundation phase average point score",
+                        "WIMD education domain - key stage 2 average point score",
+                        "WIMD education domain - key stage 4 average point score",
+                        "WIMD education domain - repeat absenteeism percentage",
+                        "WIMD education domain - percentage of key stage 4 leavers entering higher education",
+                        "WIMD education domain - percentage of adults aged 25-64 with no qualifications",
+                        "WIMD access to services domain deciles",
+                        "WIMD access to services domain - percentage unavailability of broadband at 30 mb/s",
+                        "WIMD access to services domain - average public return traveltime to a pharmacy (mins)",
+                        "WIMD access to services domain - average public return traveltime to a food shop (mins)",
+                        "WIMD access to services domain - average public return traveltime to a GP surgery (mins)",
+                        "WIMD access to services domain - average public return traveltime to a post office (mins)",
+                        "WIMD access to services domain - average public return traveltime to a primary school (mins)",
+                        "WIMD access to services domain - average public return traveltime to a public library (mins)",
+                        "WIMD access to services domain - average public return traveltime to a sports facility (mins)",
+                        "WIMD access to services domain - average public return traveltime to a secondary school (mins)",
+                        "WIMD access to services domain - average private return traveltime to a pharmacy (mins)",
+                        "WIMD access to services domain - average private return traveltime to a food shop (mins)",
+                        "WIMD access to services domain - average private return traveltime to a GP surgery (mins)",
+                        "WIMD access to services domain - average private return traveltime to a post office (mins)",
+                        "WIMD access to services domain - average private return traveltime to a primary school (mins)",
+                        "WIMD access to services domain - average private return traveltime to a public library (mins)",
+                        "WIMD access to services domain - average private return traveltime to a sports facility (mins)",
+                        "WIMD access to services domain - average private return traveltime to a secondary school (mins)",
+                        "WIMD access to services domain - average private return traveltime to a petrol station (mins)",
+                        "WIMD housing domain deciles",
+                        "WIMD housing domain - percentage of people in overcrowded households",
+                        "WIMD housing domain - percentage likelihood of poor quality housing",
+                        "WIMD housing domain - percentage likelihood of housing containing serious hazards",
+                        "WIMD housing domain - percentage likelihood of housing being in disrepair",
+                        "WIMD physical environment domain deciles",
+                        "WIMD physical environment domain - population weighted average concentration value for no2",
+                        "WIMD physical environment domain - population weighted average concentration value for particulates <10μm",
+                        "WIMD physical environment domain - population weighted average concentration value for particulates <2.5μm",
+                        "WIMD physical environment domain - households at risk of flooding score",
+                        "WIMD physical environment domain - proximity to accessible natural green space score (percentage of households)",
+                        "wimd_physical_environment_domain_proximity_to_accessible_natural_green_space_score_percentage_of_households",
+                        "WIMD physical environment domain - ambient green space score",
+                        "WIMD community safety domain deciles",
+                        "WIMD community safety domain - police recorded criminal damage (rate per 100)",
+                        "WIMD community safety domain - police recorded violent crime (rate per 100)",
+                        "WIMD community safety domain - police recorded anit-social behaviour (rate per 100)",
+                        "WIMD community safety domain - police recorded burglary (rate per 100)",
+                        "WIMD community safety domain - police recorded theft (rate per 100)",
+                        "WIMD community safety domain - fire incidences (rate per 100)",
+                    ]
+                )
+            if "FPP" in major_grouping_column_data_df:
+                # And again with the FPP data
+                columns_for_df.append(
+                    [
+                        "Mean foundation phase score",
+                        "Mean foundation phase score (rounded)",
+                        "Foundation phase (mean difference)",
+                        "Foundation phase performance",
+                    ]
+                )
+            # And I thought this was useful but couldn't fit it into any other larger group
+            if "Rural-Urban" in major_grouping_column_data_df:
+                columns_for_df.append(
+                    ["Rural-Urban", "Rural-Urban detailed classification"]
+                )
+            if len(columns_for_df) != 0:
+                # when you append arrays, you end up with arrays within arrays. This handy bit of code flattens arrays.
+                columns_for_df = list(chain(*columns_for_df))
+            selections_for_dataframe = st.multiselect(
+                "Choose one or more columns for dataframe", columns_for_df
+            )
+
+            # filtering down on performance
+            performance_filter_df = wimd_data["fpp_performance"].unique()
+            performance_selections_df = st.multiselect(
+                "Optional FPP filter", performance_filter_df
+            )
+            # filtering down on wimd decile
+            wimd_filter_df = sorted(wimd_data["wimd_decile"].unique())
+            wimd_selections_df = st.multiselect("Optional WIMD filter", wimd_filter_df)
+            # Optional filter for region
+            region_filter_df = wimd_data[
+                "Economic Region/ Economic Action Plan Area (EAP) Name"
+            ].unique()
+            region_selections_df = st.multiselect(
+                "Optional region filter", region_filter_df
+            )
+            ## Using the list of columns, which is selected from the bigger group selection, they can select a number of columns to preview.
+            submit_button = st.form_submit_button(label="Run")
+
+            ## If they haven't selected anything, we still want a dataframe to appear.
+            if len(selections_for_dataframe) == 0:
+                selections_for_dataframe = [
+                    "LSOA name (1)",
+                    "LA name",
+                    "Region",
+                    "Rural-Urban",
+                    "Rural-Urban detailed classification",
+                    "WIMD decile",
                     "Foundation phase performance",
                 ]
-            )
-            # And I thought this was useful but couldn't fit it into any other larger group
-        if "Rural-Urban" in major_grouping_column_data_df:
-            columns_for_df.append(
-                ["Rural-Urban", "Rural-Urban detailed classification"]
-            )
-        if len(columns_for_df) != 0:
-            # when you append arrays, you end up with arrays within arrays. This handy bit of code flattens arrays.
-            columns_for_df = list(chain(*columns_for_df))
-        ## Using the list of columns, which is selected from the bigger group selection, they can select a number of columns to preview.
-        selections_for_dataframe = st.multiselect(
-            "Choose one or more columns for dataframe", columns_for_df
-        )
-        ## If they haven't selected anything, we still want a dataframe to appear.
-        if len(selections_for_dataframe) == 0:
-            selections_for_dataframe = [
-                "LSOA name (1)",
-                "LA name",
-                "Region",
-                "Rural-Urban",
-                "Rural-Urban detailed classification",
-                "WIMD decile",
-                "Foundation phase performance",
-            ]
-        else:
-            ## This combines the columns which I think you'll always want plus any selections made.
-            selections_for_dataframe = [
-                "LSOA name (1)",
-                "LA name",
-                "Region",
-                "Rural-Urban",
-                "Rural-Urban detailed classification",
-                "WIMD decile",
-                "Foundation phase performance",
-            ] + selections_for_dataframe
-        ## We then select a dataframe which only has these columns
-        dataframe_to_plot = dataframe_to_plot[selections_for_dataframe]
-        # Reset the index so it's not weirdly numbered
-        dataframe_to_plot.reset_index(inplace=True)
-        # We want it to highlight every column, so we need to know how many columns are in the dataframe
-        column_number_to_highlight = len(selections_for_dataframe)
+            else:
+                ## This combines the columns which I think you'll always want plus any selections made.
+                selections_for_dataframe = [
+                    "LSOA name (1)",
+                    "LA name",
+                    "Region",
+                    "Rural-Urban",
+                    "Rural-Urban detailed classification",
+                    "WIMD decile",
+                    "Foundation phase performance",
+                ] + selections_for_dataframe
 
-        # filtering down on performance
-        performance_filter_df = wimd_data["fpp_performance"].unique()
-        performance_selections_df = st.multiselect(
-            "Optional FPP filter", performance_filter_df
-        )
+            # We want it to highlight every column, so we need to know how many columns are in the dataframe
+            column_number_to_highlight = len(selections_for_dataframe)
 
-        # filtering down on wimd decile
-        wimd_filter_df = sorted(wimd_data["wimd_decile"].unique())
-        wimd_selections_df = st.multiselect("Optional WIMD filter", wimd_filter_df)
+            # creating colours for different fpp_performance conditions
+            def performance_colour(x):
+                if x["Foundation phase performance"] == "Outperforming":
+                    return ["background-color: honeydew"] * column_number_to_highlight
+                elif x["Foundation phase performance"] == "Underperforming":
+                    return ["background-color: mistyrose"] * column_number_to_highlight
+                elif x["Foundation phase performance"] == "Other":
+                    return ["background-color: whitesmoke"] * column_number_to_highlight
 
-        # Optional filter for region
-        region_filter_df = wimd_data[
-            "Economic Region/ Economic Action Plan Area (EAP) Name"
-        ].unique()
-        region_selections_df = st.multiselect(
-            "Optional region filter", region_filter_df
-        )
-
-        # creating colours for different fpp_performance conditions
-        def performance_colour(x):
-            if x["Foundation phase performance"] == "Outperforming":
-                return ["background-color: honeydew"] * column_number_to_highlight
-            elif x["Foundation phase performance"] == "Underperforming":
-                return ["background-color: mistyrose"] * column_number_to_highlight
-            elif x["Foundation phase performance"] == "Other":
-                return ["background-color: whitesmoke"] * column_number_to_highlight
-
-        if len(performance_selections_df) != 0:
-            dataframe_to_plot = dataframe_to_plot[
-                dataframe_to_plot["Foundation phase performance"].isin(
-                    performance_selections_df
-                )
-            ]
-        if len(wimd_selections_df) != 0:
-            dataframe_to_plot = dataframe_to_plot[
-                dataframe_to_plot["WIMD decile"].isin(wimd_selections_df)
-            ]
-        # if len(region_selections_df) != 0:
-        # dataframe_to_plot = dataframe_to_plot[dataframe_to_plot["Economic Region/ Economic Action Plan Area (EAP) Name"].isin(region_selections_df)]
+            if len(performance_selections_df) != 0:
+                dataframe_to_plot = dataframe_to_plot[
+                    dataframe_to_plot["Foundation phase performance"].isin(
+                        performance_selections_df
+                    )
+                ]
+            if len(wimd_selections_df) != 0:
+                dataframe_to_plot = dataframe_to_plot[
+                    dataframe_to_plot["WIMD decile"].isin(wimd_selections_df)
+                ]
+            if len(region_selections_df) != 0:
+                dataframe_to_plot = dataframe_to_plot[
+                    dataframe_to_plot["Region"].isin(region_selections_df)
+                ]
+            if submit_button:
+                dataframe_to_plot = dataframe_to_plot[selections_for_dataframe]
+                dataframe_to_plot.reset_index(
+                    inplace=True
+                )  # Reset the index so it's not weirdly numbered
 
         # st.dataframe produces an interactive dataframe and then I've applied styling which means it's red if fpp_performance is underperforming and green if it's overperforming.
         st.dataframe(
@@ -675,8 +690,8 @@ def streamlit_wimd():
         st.download_button(
             label="Download data as CSV",
             data=csv,
-            file_name='filtered_WIMD_dataset.csv',
-            mime='text/csv',
+            file_name="filtered_WIMD_dataset.csv",
+            mime="text/csv",
         )
 
     # code to add correlation matrices
@@ -690,26 +705,28 @@ def streamlit_wimd():
     ]
 
     with st.expander("Correlation Matrix"):
-        selected_data_for_matrix = st.multiselect(
-            "Pick two or more variables to plot in a correlation matrix",
-            vars_for_matrix,
-        )
-        selected_data_for_matrix_copy = selected_data_for_matrix.copy()
-        rows = []
-        for e1 in selected_data_for_matrix:
-            for e2 in selected_data_for_matrix_copy:
-                rows.append(
-                    [
-                        e1,
-                        e2,
-                        matrix_data_to_plot[selected_data_for_matrix]
-                        .corr()
-                        .loc[e1, e2],
-                    ]
-                )
-            selected_data_for_matrix_copy.remove(e1)
-        df_corr = pd.DataFrame(rows, columns=["Var1", "Var2", "Corr"])
-        df_corr = df_corr[df_corr["Var1"] != df_corr["Var2"]]
+        with st.form(key="Selecting variables for matrix"):
+            selected_data_for_matrix = st.multiselect(
+                "Pick two or more variables to plot in a correlation matrix",
+                vars_for_matrix,
+            )
+            submit_button = st.form_submit_button(label="Run")
+            selected_data_for_matrix_copy = selected_data_for_matrix.copy()
+            rows = []
+            for e1 in selected_data_for_matrix:
+                for e2 in selected_data_for_matrix_copy:
+                    rows.append(
+                        [
+                            e1,
+                            e2,
+                            matrix_data_to_plot[selected_data_for_matrix]
+                            .corr()
+                            .loc[e1, e2],
+                        ]
+                    )
+                selected_data_for_matrix_copy.remove(e1)
+            df_corr = pd.DataFrame(rows, columns=["Var1", "Var2", "Corr"])
+            df_corr = df_corr[df_corr["Var1"] != df_corr["Var2"]]
 
         if len(selected_data_for_matrix) != 0:
             fig_corr = alt.Chart(df_corr).encode(
@@ -785,7 +802,7 @@ def streamlit_wimd():
         line = alt.Chart(pd.DataFrame({"y": [0]})).mark_rule().encode(y="y")
         st.altair_chart(
             (chart + line)
-            .properties(width=1000, height=500)
+            .properties(width=800, height=400)
             .configure_axis(
                 labelLimit=0, titleLimit=0, titleFontSize=15, labelFontSize=15
             )
