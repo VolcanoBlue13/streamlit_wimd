@@ -164,7 +164,11 @@ def streamlit_wimd():
             column_data_to_plot = ["Foundation phase (mean difference)"]
             # And I thought this was useful but couldn't fit it into any other larger group
         elif major_grouping_column_data == "Rural-Urban":
-            column_data_to_plot = ["Rural-Urban", "Rural-Urban detailed classification"]
+            column_data_to_plot = [
+                "Rural-Urban",
+                "Rural-Urban detailed classification",
+                "Rural/ Urban Settlement Classification (RU) Name",
+            ]
         # This creates a drop down list to then select the column you want to plot. The list is retrieved from the code above.
         column_selection = st.selectbox(
             "Please pick a minor category to plot", column_data_to_plot
@@ -236,13 +240,14 @@ def streamlit_wimd():
         columns = utils.COLUMN_NAME_MAPPINGS
         column_selection_actual_column_name = columns[column_selection]
         # You need to set the type for altair to plot, so I've created an encoding type if/else. If it's going to be text, we want it to be :N, if it's a decile we want it to be :O and if it's a number
-        # we want it to be :Q
+        # # we want it to be :Q
         columns_nominal = [
             "rural_urban_classification",
             "rural_urban",
             "fpp_performance",
             "Rural/ Urban Settlement Classification (RU) Name",
         ]
+
         if column_selection_actual_column_name in columns_nominal:
             encoding_type = ":N"
         elif "decile" in column_selection_actual_column_name:
@@ -250,7 +255,7 @@ def streamlit_wimd():
         else:
             encoding_type = ":Q"
 
-        # This allows you to create the column_name:Q variable for altair
+        # # This allows you to create the column_name:Q variable for altair
         specified_feature_to_plot = column_selection_actual_column_name + encoding_type
         # This is an alternative condition that I've set up so it plots the LSOAs where there is no value. Earlier on I set the LSOAs which weren't in the original dataset to be -1,
         # so anything that is above 0 we want it to plot normally (i.e. with a colour scale), but if it's got no value, we want it to be a light grey. This sets up the query for later
@@ -318,7 +323,7 @@ def streamlit_wimd():
                 lookup="properties.LSOA11Code",
                 # And we want to combine it with the wimd_data, using the "lsoa_code" field to link it, and then we want to bring across a number of columns from the WIMD dataset.
                 from_=alt.LookupData(
-                    data_for_map,
+                    pd.DataFrame(data_for_map),
                     "lsoa_code",
                     [
                         column_selection_actual_column_name,
@@ -340,11 +345,11 @@ def streamlit_wimd():
                 # As with normal altair functions, we can add a tooltip using any column in the topojson file or one of the columns we've brought across from the other data.
                 tooltip=[
                     alt.Tooltip(specified_feature_to_plot, title=column_selection),
-                    alt.Tooltip("lsoa_name_1:N", title="LSOA name (1)"),
+                    alt.Tooltip("lsoa_name_1:N", title="LSOA name"),
                     alt.Tooltip("Local Authority (LA) Name:N", title="LA name"),
                     alt.Tooltip(
                         "Rural/ Urban Settlement Classification (RU) Name:N",
-                        title="RU name",
+                        title="Rural/Urban detailed classification",
                     ),
                     alt.Tooltip("wimd_decile:N", title="WIMD decile"),
                 ],
@@ -408,7 +413,7 @@ def streamlit_wimd():
                 y=alt.Y(
                     "lsoa_name_1",
                     sort="-x",
-                    title="LSOA name (1)",
+                    title="LSOA name",
                     axis=alt.Axis(labelOverlap=False),
                 ),
                 opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
@@ -416,7 +421,7 @@ def streamlit_wimd():
                     alt.Tooltip(
                         column_selection_actual_column_name, title=column_selection
                     ),
-                    alt.Tooltip("lsoa_name_1", title="LSOA name (1)"),
+                    alt.Tooltip("lsoa_name_1", title="LSOA name"),
                     alt.Tooltip("Local Authority (LA) Name", title="LA name"),
                     alt.Tooltip("Region"),
                     alt.Tooltip("fpp_performance", title="FPP performance"),
@@ -450,6 +455,9 @@ def streamlit_wimd():
                     ],
                     title="Comparator Group",
                     axis=alt.Axis(labelOverlap=False),
+                ),
+                tooltip=alt.Tooltip(
+                    column_selection_actual_column_name, title=column_selection
                 ),
             )
         )
@@ -587,8 +595,6 @@ def streamlit_wimd():
                 # And again with the FPP data
                 columns_for_df.append(
                     [
-                        "Mean foundation phase score",
-                        "Mean foundation phase score (rounded)",
                         "Foundation phase (mean difference)",
                         "Foundation phase performance",
                     ]
