@@ -9,9 +9,10 @@ import time
 import pandas as pd
 import numpy as np
 import altair as alt
-import utils
+from utils.utils import *
 from PIL import Image
 from itertools import chain
+from utils.utils_data_columns import *
 
 import os
 
@@ -25,10 +26,10 @@ def convert_df(df):
 
 
 current_dir = os.getcwd()
-alt.themes.register("nestafont", utils.nestafont)
+alt.themes.register("nestafont", nestafont)
 alt.themes.enable("nestafont")
 
-colours = utils.NESTA_COLOURS
+colours = NESTA_COLOURS
 
 # here we load the favicon and we set the page config (so what appears in the tab on your web browser)
 im = Image.open(f"{current_dir}/images/favicon.ico")
@@ -65,110 +66,22 @@ def streamlit_wimd():
             "Pick a larger group",
             ["Population", "WIMD", "Foundation phase profile", "Rural-Urban"],
         )
+        #Note: Put the long lists of variables in utils/utils_data_columns
         # Once a user has picked a subgroup it assigns it to the variable major_grouping_column_data.
         if major_grouping_column_data == "Population":
             # This is me selecting certain columns which I feel come under the wider group of Population. These huge arrays could go in utils but thought it would be useful to see them here.
-            column_data_to_plot = [
-                "Number of children 0-5 (2020)",
-                "Number of births to mothers aged 24 and under (2020)",
-                "Number of births to mothers aged 25-34 (2020)",
-                "Number of births to mothers aged 35 and over (2020)",
-                "Total number of births (2020)",
-                "Population - all ages (2020)",
-                "Birth rate per 1000 (2020)",
-                "Number of births to mothers aged 24 and under (2019)",
-                "Number of births to mothers aged 25-34 (2019)",
-                "Number of births to mothers aged 35 and over (2019)",
-                "Total number of births (2019)",
-                "Population - all ages (2019)",
-                "Birth rate per 1000 (2019)",
-                "Number of births to mothers aged 24 and under (2018)",
-                "Number of births to mothers aged 25-34 (2018)",
-                "Number of births to mothers aged 35 and over (2018)",
-                "Total number of births (2018)",
-                "Population - all ages (2018)",
-                "Birth rate per 1000 (2018)",
-                "Number of births to mothers aged 24 and under (2017)",
-                "Number of births to mothers aged 25-34 (2017)",
-                "Number of births to mothers aged 35 and over (2017)",
-                "Total number of births (2017)",
-                "Population - all ages (2017)",
-                "Birth rate per 1000 (2017)",
-            ]
+            column_data_to_plot = population_columns
 
         elif major_grouping_column_data == "WIMD":
             # Same here but with the WIMD data
-            column_data_to_plot = [
-                "WIMD decile",
-                "Number of children living in income deprivation aged 0-4 years old (2019)",
-                "WIMD income domain deciles",
-                "WIMD income domain - percentage of people in income deprivation",
-                "WIMD employment domain deciles",
-                "WIMD employment domain - percentage of people in employment deprivation",
-                "WIMD health domain deciles",
-                "WIMD health domain - GP recorded chronic condition rate (per 100)",
-                "WIMD health domain - limiting long-term illness rate (per 100)",
-                "WIMD health domain - premature death rate (per 100,000)",
-                "WIMD health domain - GP recorded mental health condition rate (per 100)",
-                "WIMD health domain - cancer incidence rate (per 100,000)",
-                "WIMD health domain - low birth weight, live single births less than 2.5 kg (percentage)",
-                "WIMD health domain - percentage of children aged 4-5 who are obese",
-                "WIMD education domain deciles",
-                "WIMD education domain - foundation phase average point score",
-                "WIMD education domain - key stage 2 average point score",
-                "WIMD education domain - key stage 4 average point score",
-                "WIMD education domain - repeat absenteeism percentage",
-                "WIMD education domain - percentage of key stage 4 leavers entering higher education",
-                "WIMD education domain - percentage of adults aged 25-64 with no qualifications",
-                "WIMD access to services domain deciles",
-                "WIMD access to services domain - percentage unavailability of broadband at 30 mb/s",
-                "WIMD access to services domain - average public return traveltime to a pharmacy (mins)",
-                "WIMD access to services domain - average public return traveltime to a food shop (mins)",
-                "WIMD access to services domain - average public return traveltime to a GP surgery (mins)",
-                "WIMD access to services domain - average public return traveltime to a post office (mins)",
-                "WIMD access to services domain - average public return traveltime to a primary school (mins)",
-                "WIMD access to services domain - average public return traveltime to a public library (mins)",
-                "WIMD access to services domain - average public return traveltime to a sports facility (mins)",
-                "WIMD access to services domain - average public return traveltime to a secondary school (mins)",
-                "WIMD access to services domain - average private return traveltime to a pharmacy (mins)",
-                "WIMD access to services domain - average private return traveltime to a food shop (mins)",
-                "WIMD access to services domain - average private return traveltime to a GP surgery (mins)",
-                "WIMD access to services domain - average private return traveltime to a post office (mins)",
-                "WIMD access to services domain - average private return traveltime to a primary school (mins)",
-                "WIMD access to services domain - average private return traveltime to a public library (mins)",
-                "WIMD access to services domain - average private return traveltime to a sports facility (mins)",
-                "WIMD access to services domain - average private return traveltime to a secondary school (mins)",
-                "WIMD access to services domain - average private return traveltime to a petrol station (mins)",
-                "WIMD housing domain deciles",
-                "WIMD housing domain - percentage of people in overcrowded households",
-                "WIMD housing domain - percentage likelihood of poor quality housing",
-                "WIMD housing domain - percentage likelihood of housing containing serious hazards",
-                "WIMD housing domain - percentage likelihood of housing being in disrepair",
-                "WIMD physical environment domain deciles",
-                "WIMD physical environment domain - population weighted average concentration value for no2",
-                "WIMD physical environment domain - population weighted average concentration value for particulates <10μm",
-                "WIMD physical environment domain - population weighted average concentration value for particulates <2.5μm",
-                "WIMD physical environment domain - households at risk of flooding score",
-                "WIMD physical environment domain - proximity to accessible natural green space score (percentage of households)",
-                "WIMD physical environment domain - ambient green space score",
-                "WIMD community safety domain deciles",
-                "WIMD community safety domain - police recorded criminal damage (rate per 100)",
-                "WIMD community safety domain - police recorded violent crime (rate per 100)",
-                "WIMD community safety domain - police recorded anit-social behaviour (rate per 100)",
-                "WIMD community safety domain - police recorded burglary (rate per 100)",
-                "WIMD community safety domain - police recorded theft (rate per 100)",
-                "WIMD community safety domain - fire incidences (rate per 100)",
-            ]
+            column_data_to_plot = wimd_columns
         elif major_grouping_column_data == "Foundation phase profile":
             # And again with the FPP data
-            column_data_to_plot = ["Foundation phase (mean difference)"]
+            column_data_to_plot = fpp_columns
             # And I thought this was useful but couldn't fit it into any other larger group
         elif major_grouping_column_data == "Rural-Urban":
-            column_data_to_plot = [
-                "Rural-Urban",
-                "Rural-Urban detailed classification",
-                "Rural/ Urban Settlement Classification (RU) Name",
-            ]
+            column_data_to_plot = rural_columns
+
         # This creates a drop down list to then select the column you want to plot. The list is retrieved from the code above.
         column_selection = st.selectbox(
             "Please pick a minor category to plot", column_data_to_plot
@@ -197,6 +110,12 @@ def streamlit_wimd():
         region_selections = st.multiselect(
             "Choose region to filter down", region_filter
         )
+        #Note: Added in instructions.
+        st.markdown("""
+        If there are more than 15 LSOA's after the selection process, you can press shift and select up to 15 LSOA's from the map to plot on the LSOA bar chart below the map. Else all LSOA's will be displayed on the chart. 
+        
+        Clicking on a bar in the LSOA bar chart will highlight that LSOA on the map. Double-click will remove all selections.
+        """)
 
         #  As the map starts as all of Wales, we don't want it to show an LA filter until someone has selected a region. Once they've selected a region, the region_selections becomes populated
         # so then it'll show the LA selection. Again it's a multiselection option so people can choose more than one LA to view.
@@ -237,7 +156,7 @@ def streamlit_wimd():
             "LSOA_Wales",
         )
 
-        columns = utils.COLUMN_NAME_MAPPINGS
+        columns = COLUMN_NAME_MAPPINGS
         column_selection_actual_column_name = columns[column_selection]
         # You need to set the type for altair to plot, so I've created an encoding type if/else. If it's going to be text, we want it to be :N, if it's a decile we want it to be :O and if it's a number
         # # we want it to be :Q
@@ -254,68 +173,57 @@ def streamlit_wimd():
             encoding_type = ":O"
         else:
             encoding_type = ":Q"
+            
 
         # # This allows you to create the column_name:Q variable for altair
         specified_feature_to_plot = column_selection_actual_column_name + encoding_type
         # This is an alternative condition that I've set up so it plots the LSOAs where there is no value. Earlier on I set the LSOAs which weren't in the original dataset to be -1,
         # so anything that is above 0 we want it to plot normally (i.e. with a colour scale), but if it's got no value, we want it to be a light grey. This sets up the query for later
         # on.
-        alternative_condition = "datum." + column_selection_actual_column_name + " > 0"
-
+        # Note: This condition tests whether a value is na/null or not.
+        alternative_condition = "isValid(datum." + column_selection_actual_column_name + ")"
         ## This sets up the altair selection, so if you click select an LSOA on either the map or the bar chart, it's highlighted on the other one. You need to have a field that is in both charts
         ## for it to link across them.
         click = alt.selection_multi(fields=["lsoa_name_1"])
 
+        #Note: This is an extra selection that will initialise an empty plot. 
+        click_empty = alt.selection_multi(fields=["lsoa_name_1"], empty="none")
+
         data_for_map = wimd_data.copy()
+
         if len(performance_selections) != 0:
             data_for_map_performance = data_for_map[
                 data_for_map["fpp_performance"].isin(performance_selections)
             ]
             if len(wimd_selections) != 0:
-                data_for_map_wimd = data_for_map_performance[
+                data_for_map = data_for_map_performance[
                     data_for_map_performance["wimd_decile"].isin(wimd_selections)
                 ]
-                data_for_map_everything_else = data_for_map[
-                    ~(
-                        (data_for_map["fpp_performance"].isin(performance_selections))
-                        & (data_for_map["wimd_decile"].isin(wimd_selections))
-                    )
-                ]
-                data_for_map_everything_else[column_selection_actual_column_name] = -1
-                data_for_map = pd.concat(
-                    [data_for_map_performance, data_for_map_everything_else], axis=0
-                )
             else:
-                data_for_map_everything_else_performance = data_for_map[
-                    ~data_for_map["fpp_performance"].isin(performance_selections)
-                ]
-                data_for_map_everything_else_performance[
-                    column_selection_actual_column_name
-                ] = -1
-                data_for_map = pd.concat(
-                    [
-                        data_for_map_performance,
-                        data_for_map_everything_else_performance,
-                    ],
-                    axis=0,
-                )
+                data_for_map = data_for_map_performance
         else:
             if len(wimd_selections) != 0:
-                data_for_map_wimd = data_for_map[
+                data_for_map = data_for_map[
                     data_for_map["wimd_decile"].isin(wimd_selections)
                 ]
-                data_for_map_everything_else_wimd = data_for_map[
-                    ~data_for_map["wimd_decile"].isin(wimd_selections)
-                ]
-                data_for_map_everything_else_wimd[
-                    column_selection_actual_column_name
-                ] = -1
-                data_for_map = pd.concat(
-                    [data_for_map_wimd, data_for_map_everything_else_wimd], axis=0
-                )
 
+        lsoas_selected = data_for_map[data_for_map.lsoa_code.isin(lsoas_to_plot)].lsoa_code.unique()
         ## The choropleth map is plotted using "regions" which is the remote topojson and we then use altairs .transform_lookup function to link it to the WIMD dataset.
-        map = (
+        
+        #Plotting base layer, so that the LSOA's always show up. 
+        base_map = (
+            alt.Chart(regions)
+            .mark_geoshape(stroke="white",color='lightgray')
+            .transform_filter(
+                alt.FieldOneOfPredicate(
+                    field="properties.LSOA11Code", oneOf=lsoas_to_plot
+                )
+            )
+            .properties(width=700, height=650)
+        )
+        
+        #Plotting colours based on selections.
+        layer_map = (
             alt.Chart(regions)
             .mark_geoshape(stroke="white")
             .transform_lookup(
@@ -338,7 +246,7 @@ def streamlit_wimd():
             )
             .transform_filter(
                 alt.FieldOneOfPredicate(
-                    field="properties.LSOA11Code", oneOf=lsoas_to_plot
+                    field="properties.LSOA11Code", oneOf=lsoas_selected
                 )
             )
             .encode(
@@ -370,22 +278,26 @@ def streamlit_wimd():
                 opacity=alt.condition(click, alt.value(1), alt.value(0.2))
                 # We need this add_selection to ensure the "click" is added to the choropleth.
             )
-            .add_selection(click)
+            .add_selection(click, click_empty)
             .properties(width=700, height=650)
         )
-
-        # We don't need every LSOA in the bar chart, but sometimes the column selected might make more sense as ascending than descending or vice versa. So I've added this radio button so you can
-        # change which one you want to view.
-        ascending_option = st.radio(
-            "Select ascending or descending for bar chart", ["Ascending", "Descending"]
-        )
+        map = alt.layer(base_map,layer_map)
+        # # We don't need every LSOA in the bar chart, but sometimes the column selected might make more sense as ascending than descending or vice versa. So I've added this radio button so you can
+        # # change which one you want to view.
+        #Note: REMOVED as isn't necessary anymore
+        # ascending_option = st.radio(
+        #     "Select ascending or descending for bar chart", ["Ascending", "Descending"]
+        # )
         # I've added a slider so you can select a number of LSOAs to show in the bar chart. You may only want to see the top 10 or perhaps you want more.
-        no_to_show = st.slider("How many LSOAs to show in bar chart", 0, 5, 100)
+        # Note: REMOVED THE SLIDER (for an alternative plot)
+        # no_to_show = st.slider("How many LSOAs to show in bar chart", 0, 5, 100)
         # Unfortunately in pandas, ascending is a True/False value so I've added this in to convert it.
-        if ascending_option == "Ascending":
-            ascending_val = True
-        else:
-            ascending_val = False
+        
+        #Note: REMOVED Doesn't work with the multiselect plot.
+        # if ascending_option == "Ascending":
+        #     ascending_val = True
+        # else:
+        #     ascending_val = False
         # We don't want all the LSOAs, so I've only selected those that are in the WIMD dataset.
         data_for_bar_chart = wimd_data[(wimd_data.lsoa_code.isin(lsoas_to_plot))]
         data_for_bar_chart = data_for_bar_chart.rename(
@@ -400,73 +312,109 @@ def streamlit_wimd():
                 data_for_bar_chart["wimd_decile"].isin(wimd_selections)
             ]
         # This then sorts the bar chart by the column selection which is also showing on the map. And it shows the number of rows as selected by the slider.
-        data_for_bar_chart = data_for_bar_chart.sort_values(
-            by=column_selection_actual_column_name, ascending=ascending_val
-        )[:no_to_show]
+        # Note: Removed as it is for the ascending option.
+        # data_for_bar_chart = data_for_bar_chart.sort_values(
+        #     by=column_selection_actual_column_name, ascending=ascending_val
+        # )#Removed: [:no_to_show] from the end of this bracket as that is what cut off the data. 
 
-        # This plots a normal bar chart with the added opacity "alt.condition". This is the same as above.
-        bar_chart = (
-            alt.Chart(data_for_bar_chart)
-            .mark_bar(color=utils.NESTA_COLOURS[1])
-            .encode(
-                x=alt.X(column_selection_actual_column_name, title=column_selection),
-                y=alt.Y(
-                    "lsoa_name_1",
-                    sort="-x",
-                    title="LSOA name",
-                    axis=alt.Axis(labelOverlap=False),
-                ),
-                opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
-                tooltip=[
-                    alt.Tooltip(
-                        column_selection_actual_column_name, title=column_selection
+        # Note: If the number of LSOA's with data after the selection is great than 15, you can select them using multiselect. Otherwise they are all plotted. 
+        if data_for_bar_chart[column_selection_actual_column_name].count()>15:
+            bar_chart = (
+                alt.Chart(data_for_bar_chart)
+                .mark_bar(color=NESTA_COLOURS[1])
+                .encode(
+                    x=alt.X(column_selection_actual_column_name, title=column_selection),
+                    y=alt.Y(
+                        "lsoa_name_1",
+                        sort="-x",
+                        title="LSOA name",
+                        axis=alt.Axis(labelOverlap=False,titlePadding=100),
                     ),
-                    alt.Tooltip("lsoa_name_1", title="LSOA name"),
-                    alt.Tooltip("Local Authority (LA) Name", title="LA name"),
-                    alt.Tooltip("Region"),
-                    alt.Tooltip("fpp_performance", title="FPP performance"),
-                    alt.Tooltip("wimd_decile", title="WIMD decile"),
-                ],
+                    opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
+                    tooltip=[
+                        alt.Tooltip(
+                            column_selection_actual_column_name, title=column_selection
+                        ),
+                        alt.Tooltip("lsoa_name_1", title="LSOA name"),
+                        alt.Tooltip("Local Authority (LA) Name", title="LA name"),
+                        alt.Tooltip("Region"),
+                        alt.Tooltip("fpp_performance", title="FPP performance"),
+                        alt.Tooltip("wimd_decile", title="WIMD decile"),
+                    ],
+                )
+                #Note: this is the part that allows you the selected LSOA's from the map to be placed in the bar chart
+                .transform_filter(
+                    click_empty
+
+                )
+                .add_selection(click)
+                .properties(width=400, height=400)
             )
-            .add_selection(click)
-            .properties(width=400, height=400)
-        )
+        else:
+            bar_chart = (
+                alt.Chart(data_for_bar_chart)
+                .mark_bar(color=NESTA_COLOURS[1])
+                .encode(
+                    x=alt.X(column_selection_actual_column_name, title=column_selection),
+                    y=alt.Y(
+                        "lsoa_name_1",
+                        sort="-x",
+                        title="LSOA name",
+                        axis=alt.Axis(labelOverlap=False),
+                    ),
+                    opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
+                    tooltip=[
+                        alt.Tooltip(
+                            column_selection_actual_column_name, title=column_selection
+                        ),
+                        alt.Tooltip("lsoa_name_1", title="LSOA name"),
+                        alt.Tooltip("Local Authority (LA) Name", title="LA name"),
+                        alt.Tooltip("Region"),
+                        alt.Tooltip("fpp_performance", title="FPP performance"),
+                        alt.Tooltip("wimd_decile", title="WIMD decile"),
+                    ],
+                )
+                .add_selection(click)
+                .properties(width=400, height=400)
+            )
 
         comparator_data = pd.read_csv(f"{current_dir}/datasets/comparator_data.csv")
-        comparator_bar_chart = (
-            alt.Chart(comparator_data)
-            .mark_bar(color=colours[1])
-            .encode(
-                x=alt.X(column_selection_actual_column_name, title=column_selection),
-                y=alt.Y(
-                    "comparator_group",
-                    sort=[
-                        "All LSOAs",
-                        "IMD Decile 1",
-                        "IMD Decile 2",
-                        "IMD Decile 3",
-                        "IMD Decile 4",
-                        "IMD Decile 5",
-                        "IMD Decile 6",
-                        "IMD Decile 7",
-                        "IMD Decile 8",
-                        "IMD Decile 9",
-                        "IMD Decile 10",
-                    ],
-                    title="Comparator Group",
-                    axis=alt.Axis(labelOverlap=False),
-                ),
-                tooltip=alt.Tooltip(
-                    column_selection_actual_column_name, title=column_selection
-                ),
+        if column_selection!='Rural-Urban':
+            comparator_bar_chart = (
+                alt.Chart(comparator_data)
+                .mark_bar(color=colours[1])
+                .encode(
+                    x=alt.X(column_selection_actual_column_name, title=column_selection),
+                    y=alt.Y(
+                        "comparator_group",
+                        sort=[
+                            "All LSOAs",
+                            "IMD Decile 1",
+                            "IMD Decile 2",
+                            "IMD Decile 3",
+                            "IMD Decile 4",
+                            "IMD Decile 5",
+                            "IMD Decile 6",
+                            "IMD Decile 7",
+                            "IMD Decile 8",
+                            "IMD Decile 9",
+                            "IMD Decile 10",
+                        ],
+                        title="Comparator Group",
+                        axis=alt.Axis(labelOverlap=False),
+                    ),
+                    tooltip=alt.Tooltip(
+                        column_selection_actual_column_name, title=column_selection
+                    ),
+                )
             )
-        )
-
-        bar_charts = alt.vconcat(bar_chart, comparator_bar_chart)
+            charts = alt.hconcat(map, comparator_bar_chart,center=True)#.resolve_scale(x='shared')
+        else:
+            charts = map
 
         # To show it in streamlit, you just need st.altair_chart, and then it can do the rest!
         st.altair_chart(
-            alt.hconcat(map, bar_charts)
+            alt.vconcat(charts,bar_chart,center=True)
             .configure_view(strokeWidth=0)
             .resolve_scale("independent")
             .configure_axis(labelLimit=0, titleLimit=0)
@@ -484,7 +432,7 @@ def streamlit_wimd():
             )
             # Again we only want the LSOAs which are in the WIMD data.
             dataframe_to_plot = wimd_data.rename(
-                columns=dict((v, k) for k, v in utils.COLUMN_NAME_MAPPINGS.items())
+                columns=dict((v, k) for k, v in COLUMN_NAME_MAPPINGS.items())
             )
             dataframe_to_plot = dataframe_to_plot.rename(
                 columns={
@@ -498,111 +446,22 @@ def streamlit_wimd():
             if "Population" in major_grouping_column_data_df:
                 # This is me selecting certain columns which I feel come under the wider group of Population. These huge arrays could go in utils but thought it would be useful to see them here.
                 columns_for_df.append(
-                    [
-                        "Number of children 0-5 (2020)",
-                        "Number of births to mothers aged 24 and under (2020)",
-                        "Number of births to mothers aged 25-34 (2020)",
-                        "Number of births to mothers aged 35 and over (2020)",
-                        "Total number of births (2020)",
-                        "Population - all ages (2020)",
-                        "Birth rate per 1000 (2020)",
-                        "Number of births to mothers aged 24 and under (2019)",
-                        "Number of births to mothers aged 25-34 (2019)",
-                        "Number of births to mothers aged 35 and over (2019)",
-                        "Total number of births (2019)",
-                        "Population - all ages (2019)",
-                        "Birth rate per 1000 (2019)",
-                        "Number of births to mothers aged 24 and under (2018)",
-                        "Number of births to mothers aged 25-34 (2018)",
-                        "Number of births to mothers aged 35 and over (2018)",
-                        "Total number of births (2018)",
-                        "Population - all ages (2018)",
-                        "Birth rate per 1000 (2018)",
-                        "Number of births to mothers aged 24 and under (2017)",
-                        "Number of births to mothers aged 25-34 (2017)",
-                        "Number of births to mothers aged 35 and over (2017)",
-                        "Total number of births (2017)",
-                        "Population - all ages (2017)",
-                        "Birth rate per 1000 (2017)",
-                    ]
+                    population_columns_for_df
                 )
             if "WIMD" in major_grouping_column_data_df:
                 # Same here but with the WIMD data
                 columns_for_df.append(
-                    [
-                        "Number of children living in income deprivation aged 0-4 years old (2019)",
-                        "WIMD income domain deciles",
-                        "WIMD income domain - percentage of people in income deprivation",
-                        "WIMD employment domain deciles",
-                        "WIMD employment domain - percentage of people in employment deprivation",
-                        "WIMD health domain deciles",
-                        "WIMD health domain - GP recorded chronic condition rate (per 100)",
-                        "WIMD health domain - limiting long-term illness rate (per 100)",
-                        "WIMD health domain - premature death rate (per 100,000)",
-                        "WIMD health domain - GP recorded mental health condition rate (per 100)",
-                        "WIMD health domain - cancer incidence rate (per 100,000)",
-                        "WIMD health domain - low birth weight, live single births less than 2.5 kg (percentage)",
-                        "WIMD health domain - percentage of children aged 4-5 who are obese",
-                        "WIMD education domain deciles",
-                        "WIMD education domain - foundation phase average point score",
-                        "WIMD education domain - key stage 2 average point score",
-                        "WIMD education domain - key stage 4 average point score",
-                        "WIMD education domain - repeat absenteeism percentage",
-                        "WIMD education domain - percentage of key stage 4 leavers entering higher education",
-                        "WIMD education domain - percentage of adults aged 25-64 with no qualifications",
-                        "WIMD access to services domain deciles",
-                        "WIMD access to services domain - percentage unavailability of broadband at 30 mb/s",
-                        "WIMD access to services domain - average public return traveltime to a pharmacy (mins)",
-                        "WIMD access to services domain - average public return traveltime to a food shop (mins)",
-                        "WIMD access to services domain - average public return traveltime to a GP surgery (mins)",
-                        "WIMD access to services domain - average public return traveltime to a post office (mins)",
-                        "WIMD access to services domain - average public return traveltime to a primary school (mins)",
-                        "WIMD access to services domain - average public return traveltime to a public library (mins)",
-                        "WIMD access to services domain - average public return traveltime to a sports facility (mins)",
-                        "WIMD access to services domain - average public return traveltime to a secondary school (mins)",
-                        "WIMD access to services domain - average private return traveltime to a pharmacy (mins)",
-                        "WIMD access to services domain - average private return traveltime to a food shop (mins)",
-                        "WIMD access to services domain - average private return traveltime to a GP surgery (mins)",
-                        "WIMD access to services domain - average private return traveltime to a post office (mins)",
-                        "WIMD access to services domain - average private return traveltime to a primary school (mins)",
-                        "WIMD access to services domain - average private return traveltime to a public library (mins)",
-                        "WIMD access to services domain - average private return traveltime to a sports facility (mins)",
-                        "WIMD access to services domain - average private return traveltime to a secondary school (mins)",
-                        "WIMD access to services domain - average private return traveltime to a petrol station (mins)",
-                        "WIMD housing domain deciles",
-                        "WIMD housing domain - percentage of people in overcrowded households",
-                        "WIMD housing domain - percentage likelihood of poor quality housing",
-                        "WIMD housing domain - percentage likelihood of housing containing serious hazards",
-                        "WIMD housing domain - percentage likelihood of housing being in disrepair",
-                        "WIMD physical environment domain deciles",
-                        "WIMD physical environment domain - population weighted average concentration value for no2",
-                        "WIMD physical environment domain - population weighted average concentration value for particulates <10μm",
-                        "WIMD physical environment domain - population weighted average concentration value for particulates <2.5μm",
-                        "WIMD physical environment domain - households at risk of flooding score",
-                        "WIMD physical environment domain - proximity to accessible natural green space score (percentage of households)",
-                        "wimd_physical_environment_domain_proximity_to_accessible_natural_green_space_score_percentage_of_households",
-                        "WIMD physical environment domain - ambient green space score",
-                        "WIMD community safety domain deciles",
-                        "WIMD community safety domain - police recorded criminal damage (rate per 100)",
-                        "WIMD community safety domain - police recorded violent crime (rate per 100)",
-                        "WIMD community safety domain - police recorded anit-social behaviour (rate per 100)",
-                        "WIMD community safety domain - police recorded burglary (rate per 100)",
-                        "WIMD community safety domain - police recorded theft (rate per 100)",
-                        "WIMD community safety domain - fire incidences (rate per 100)",
-                    ]
+                    wimd_columns_for_df
                 )
             if "FPP" in major_grouping_column_data_df:
                 # And again with the FPP data
                 columns_for_df.append(
-                    [
-                        "Foundation phase (mean difference)",
-                        "Foundation phase performance",
-                    ]
+                    fpp_columns_for_df
                 )
             # And I thought this was useful but couldn't fit it into any other larger group
             if "Rural-Urban" in major_grouping_column_data_df:
                 columns_for_df.append(
-                    ["Rural-Urban", "Rural-Urban detailed classification"]
+                    rural_columns_for_df
                 )
             if len(columns_for_df) != 0:
                 # when you append arrays, you end up with arrays within arrays. This handy bit of code flattens arrays.
@@ -635,11 +494,22 @@ def streamlit_wimd():
                     "LSOA name (1)",
                     "LA name",
                     "Region",
+                    # Note: If you leave this in, when you select Rural-Urban it expects these columns twice! So errors out. 
+                    # You have two options, if you aren't too bothered about these variables being in every dataframe produced, delete. 
+                    # Otherwise you can make an if statement for specifically the urban one (working example below).
                     "Rural-Urban",
                     "Rural-Urban detailed classification",
                     "WIMD decile",
                     "Foundation phase performance",
                 ]
+            elif 'Rural-Urban' in major_grouping_column_data_df:
+                selections_for_dataframe = [
+                    "LSOA name (1)",
+                    "LA name",
+                    "Region",
+                    "WIMD decile",
+                    "Foundation phase performance",
+                ] + selections_for_dataframe
             else:
                 ## This combines the columns which I think you'll always want plus any selections made.
                 selections_for_dataframe = [
@@ -702,7 +572,7 @@ def streamlit_wimd():
 
     # code to add correlation matrices
     matrix_data_to_plot = wimd_data.rename(
-        columns=dict((v, k) for k, v in utils.COLUMN_NAME_MAPPINGS.items())
+        columns=dict((v, k) for k, v in COLUMN_NAME_MAPPINGS.items())
     )
     vars_for_matrix = [
         var
