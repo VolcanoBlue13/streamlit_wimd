@@ -379,6 +379,7 @@ def streamlit_wimd():
             )
 
         comparator_data = pd.read_csv(f"{current_dir}/datasets/comparator_data.csv")
+        # Note: Current solution until comparator df is changed: if else for Rural-Urban.
         if column_selection!='Rural-Urban':
             comparator_bar_chart = (
                 alt.Chart(comparator_data)
@@ -443,6 +444,7 @@ def streamlit_wimd():
             submit_button = st.form_submit_button(label="Run")
         with st.form(key="Selecting columns"):
             columns_for_df = []
+            #Note: Put the long lists of variables in utils/utils_data_columns
             if "Population" in major_grouping_column_data_df:
                 # This is me selecting certain columns which I feel come under the wider group of Population. These huge arrays could go in utils but thought it would be useful to see them here.
                 columns_for_df.append(
@@ -494,9 +496,9 @@ def streamlit_wimd():
                     "LSOA name (1)",
                     "LA name",
                     "Region",
-                    # Note: If you leave this in, when you select Rural-Urban it expects these columns twice! So errors out. 
-                    # You have two options, if you aren't too bothered about these variables being in every dataframe produced, delete. 
-                    # Otherwise you can make an if statement for specifically the urban one (working example below).
+                    # Note: If you leave this in, when you select Rural-Urban it expects these columns twice! So that is why it errored out. 
+                    # You have two options, if you aren't too bothered about "Rural-Urban"/"Rural-Urban detailed classification" being in every dataframe produced, delete. 
+                    # Otherwise you can make an elif statement for specifically the urban one (working example below).
                     "Rural-Urban",
                     "Rural-Urban detailed classification",
                     "WIMD decile",
