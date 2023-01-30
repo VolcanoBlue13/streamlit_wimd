@@ -66,7 +66,7 @@ def streamlit_wimd():
             "Pick a larger group",
             ["Population", "WIMD", "Foundation phase profile", "Rural-Urban"],
         )
-        #Note: Put the long lists of variables in utils/utils_data_columns
+        # Note: Put the long lists of variables in utils/utils_data_columns
         # Once a user has picked a subgroup it assigns it to the variable major_grouping_column_data.
         if major_grouping_column_data == "Population":
             # This is me selecting certain columns which I feel come under the wider group of Population. These huge arrays could go in utils but thought it would be useful to see them here.
@@ -110,12 +110,14 @@ def streamlit_wimd():
         region_selections = st.multiselect(
             "Choose region to filter down", region_filter
         )
-        #Note: Added in instructions.
-        st.markdown("""
+        # Note: Added in instructions.
+        st.markdown(
+            """
         If there are more than 15 LSOA's after the selection process, you can press shift and select up to 15 LSOA's from the map to plot on the LSOA bar chart below the map. Else all LSOA's will be displayed on the chart. 
         
         Clicking on a bar in the LSOA bar chart will highlight that LSOA on the map. Double-click will remove all selections.
-        """)
+        """
+        )
 
         #  As the map starts as all of Wales, we don't want it to show an LA filter until someone has selected a region. Once they've selected a region, the region_selections becomes populated
         # so then it'll show the LA selection. Again it's a multiselection option so people can choose more than one LA to view.
@@ -173,7 +175,6 @@ def streamlit_wimd():
             encoding_type = ":O"
         else:
             encoding_type = ":Q"
-            
 
         # # This allows you to create the column_name:Q variable for altair
         specified_feature_to_plot = column_selection_actual_column_name + encoding_type
@@ -181,12 +182,14 @@ def streamlit_wimd():
         # so anything that is above 0 we want it to plot normally (i.e. with a colour scale), but if it's got no value, we want it to be a light grey. This sets up the query for later
         # on.
         # Note: This condition tests whether a value is na/null or not.
-        alternative_condition = "isValid(datum." + column_selection_actual_column_name + ")"
+        alternative_condition = (
+            "isValid(datum." + column_selection_actual_column_name + ")"
+        )
         ## This sets up the altair selection, so if you click select an LSOA on either the map or the bar chart, it's highlighted on the other one. You need to have a field that is in both charts
         ## for it to link across them.
         click = alt.selection_multi(fields=["lsoa_name_1"])
 
-        #Note: This is an extra selection that will initialise an empty plot. 
+        # Note: This is an extra selection that will initialise an empty plot.
         click_empty = alt.selection_multi(fields=["lsoa_name_1"], empty="none")
 
         data_for_map = wimd_data.copy()
@@ -207,13 +210,15 @@ def streamlit_wimd():
                     data_for_map["wimd_decile"].isin(wimd_selections)
                 ]
 
-        lsoas_selected = data_for_map[data_for_map.lsoa_code.isin(lsoas_to_plot)].lsoa_code.unique()
+        lsoas_selected = data_for_map[
+            data_for_map.lsoa_code.isin(lsoas_to_plot)
+        ].lsoa_code.unique()
         ## The choropleth map is plotted using "regions" which is the remote topojson and we then use altairs .transform_lookup function to link it to the WIMD dataset.
-        
-        #Plotting base layer, so that the LSOA's always show up. 
+
+        # Plotting base layer, so that the LSOA's always show up.
         base_map = (
             alt.Chart(regions)
-            .mark_geoshape(stroke="white",color='lightgray')
+            .mark_geoshape(stroke="white", color="lightgray")
             .transform_filter(
                 alt.FieldOneOfPredicate(
                     field="properties.LSOA11Code", oneOf=lsoas_to_plot
@@ -221,8 +226,8 @@ def streamlit_wimd():
             )
             .properties(width=700, height=650)
         )
-        
-        #Plotting colours based on selections.
+
+        # Plotting colours based on selections.
         layer_map = (
             alt.Chart(regions)
             .mark_geoshape(stroke="white")
@@ -239,6 +244,7 @@ def streamlit_wimd():
                         "Rural/ Urban Settlement Classification (RU) Name",
                         "Local Authority (LA) Name",
                         "Economic Region/ Economic Action Plan Area (EAP) Name",
+                        "fpp_performance",
                         "wimd_decile",
                     ],
                 ),
@@ -255,6 +261,7 @@ def streamlit_wimd():
                     alt.Tooltip(specified_feature_to_plot, title=column_selection),
                     alt.Tooltip("lsoa_name_1:N", title="LSOA name"),
                     alt.Tooltip("Local Authority (LA) Name:N", title="LA name"),
+                    alt.Tooltip("fpp_performance:N", title="FPP Performance"),
                     alt.Tooltip(
                         "Rural/ Urban Settlement Classification (RU) Name:N",
                         title="Rural/Urban detailed classification",
@@ -281,10 +288,10 @@ def streamlit_wimd():
             .add_selection(click, click_empty)
             .properties(width=700, height=650)
         )
-        map = alt.layer(base_map,layer_map)
+        map = alt.layer(base_map, layer_map)
         # # We don't need every LSOA in the bar chart, but sometimes the column selected might make more sense as ascending than descending or vice versa. So I've added this radio button so you can
         # # change which one you want to view.
-        #Note: REMOVED as isn't necessary anymore
+        # Note: REMOVED as isn't necessary anymore
         # ascending_option = st.radio(
         #     "Select ascending or descending for bar chart", ["Ascending", "Descending"]
         # )
@@ -292,8 +299,8 @@ def streamlit_wimd():
         # Note: REMOVED THE SLIDER (for an alternative plot)
         # no_to_show = st.slider("How many LSOAs to show in bar chart", 0, 5, 100)
         # Unfortunately in pandas, ascending is a True/False value so I've added this in to convert it.
-        
-        #Note: REMOVED Doesn't work with the multiselect plot.
+
+        # Note: REMOVED Doesn't work with the multiselect plot.
         # if ascending_option == "Ascending":
         #     ascending_val = True
         # else:
@@ -315,20 +322,22 @@ def streamlit_wimd():
         # Note: Removed as it is for the ascending option.
         # data_for_bar_chart = data_for_bar_chart.sort_values(
         #     by=column_selection_actual_column_name, ascending=ascending_val
-        # )#Removed: [:no_to_show] from the end of this bracket as that is what cut off the data. 
+        # )#Removed: [:no_to_show] from the end of this bracket as that is what cut off the data.
 
-        # Note: If the number of LSOA's with data after the selection is great than 15, you can select them using multiselect. Otherwise they are all plotted. 
-        if data_for_bar_chart[column_selection_actual_column_name].count()>15:
+        # Note: If the number of LSOA's with data after the selection is great than 15, you can select them using multiselect (and the bar chart is empty at first). Otherwise all are plotted.
+        if data_for_bar_chart[column_selection_actual_column_name].count() > 15:
             bar_chart = (
                 alt.Chart(data_for_bar_chart)
                 .mark_bar(color=NESTA_COLOURS[1])
                 .encode(
-                    x=alt.X(column_selection_actual_column_name, title=column_selection),
+                    x=alt.X(
+                        column_selection_actual_column_name, title=column_selection
+                    ),
                     y=alt.Y(
                         "lsoa_name_1",
                         sort="-x",
                         title="LSOA name",
-                        axis=alt.Axis(labelOverlap=False,titlePadding=100),
+                        axis=alt.Axis(labelOverlap=False, titlePadding=100),
                     ),
                     opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
                     tooltip=[
@@ -342,11 +351,8 @@ def streamlit_wimd():
                         alt.Tooltip("wimd_decile", title="WIMD decile"),
                     ],
                 )
-                #Note: this is the part that allows you the selected LSOA's from the map to be placed in the bar chart
-                .transform_filter(
-                    click_empty
-
-                )
+                # Note: this is the part that allows the selected LSOA's from the map to be placed in the bar chart
+                .transform_filter(click_empty)
                 .add_selection(click)
                 .properties(width=400, height=400)
             )
@@ -355,7 +361,9 @@ def streamlit_wimd():
                 alt.Chart(data_for_bar_chart)
                 .mark_bar(color=NESTA_COLOURS[1])
                 .encode(
-                    x=alt.X(column_selection_actual_column_name, title=column_selection),
+                    x=alt.X(
+                        column_selection_actual_column_name, title=column_selection
+                    ),
                     y=alt.Y(
                         "lsoa_name_1",
                         sort="-x",
@@ -380,12 +388,15 @@ def streamlit_wimd():
 
         comparator_data = pd.read_csv(f"{current_dir}/datasets/comparator_data.csv")
         # Note: Current solution until comparator df is changed: if else for Rural-Urban.
-        if column_selection!='Rural-Urban':
+        if column_selection == "Rural-Urban":
             comparator_bar_chart = (
                 alt.Chart(comparator_data)
                 .mark_bar(color=colours[1])
                 .encode(
-                    x=alt.X(column_selection_actual_column_name, title=column_selection),
+                    x=alt.X(
+                        column_selection_actual_column_name,
+                        title="Percentage of urban LSOAs (%)",
+                    ),
                     y=alt.Y(
                         "comparator_group",
                         sort=[
@@ -409,13 +420,65 @@ def streamlit_wimd():
                     ),
                 )
             )
-            charts = alt.hconcat(map, comparator_bar_chart,center=True)#.resolve_scale(x='shared')
-        else:
+            charts = alt.hconcat(map, comparator_bar_chart, center=True)
+        elif column_selection == "Rural-Urban detailed classification":
             charts = map
+        elif column_selection == "WIMD decile":
+            charts = map
+        elif column_selection == "WIMD income domain deciles":
+            charts = map
+        elif column_selection == "WIMD employment domain deciles":
+            charts = map
+        elif column_selection == "WIMD health domain deciles":
+            charts = map
+        elif column_selection == "WIMD income domain deciles":
+            charts = map
+        elif column_selection == "WIMD education domain deciles":
+            charts = map
+        elif column_selection == "WIMD access to services domain deciles":
+            charts = map
+        elif column_selection == "WIMD housing domain deciles":
+            charts = map
+        elif column_selection == "WIMD physical environment domain deciles":
+            charts = map
+        elif column_selection == "WIMD community safety domain deciles":
+            charts = map
+        else:
+            comparator_bar_chart = (
+                alt.Chart(comparator_data)
+                .mark_bar(color=colours[1])
+                .encode(
+                    x=alt.X(
+                        column_selection_actual_column_name, title=column_selection
+                    ),
+                    y=alt.Y(
+                        "comparator_group",
+                        sort=[
+                            "All LSOAs",
+                            "IMD Decile 1",
+                            "IMD Decile 2",
+                            "IMD Decile 3",
+                            "IMD Decile 4",
+                            "IMD Decile 5",
+                            "IMD Decile 6",
+                            "IMD Decile 7",
+                            "IMD Decile 8",
+                            "IMD Decile 9",
+                            "IMD Decile 10",
+                        ],
+                        title="Comparator Group",
+                        axis=alt.Axis(labelOverlap=False),
+                    ),
+                    tooltip=alt.Tooltip(
+                        column_selection_actual_column_name, title=column_selection
+                    ),
+                )
+            )
+            charts = alt.hconcat(map, comparator_bar_chart, center=True)
 
         # To show it in streamlit, you just need st.altair_chart, and then it can do the rest!
         st.altair_chart(
-            alt.vconcat(charts,bar_chart,center=True)
+            alt.vconcat(charts, bar_chart, center=True)
             .configure_view(strokeWidth=0)
             .resolve_scale("independent")
             .configure_axis(labelLimit=0, titleLimit=0)
@@ -444,27 +507,19 @@ def streamlit_wimd():
             submit_button = st.form_submit_button(label="Run")
         with st.form(key="Selecting columns"):
             columns_for_df = []
-            #Note: Put the long lists of variables in utils/utils_data_columns
+            # Note: Put the long lists of variables in utils/utils_data_columns
             if "Population" in major_grouping_column_data_df:
                 # This is me selecting certain columns which I feel come under the wider group of Population. These huge arrays could go in utils but thought it would be useful to see them here.
-                columns_for_df.append(
-                    population_columns_for_df
-                )
+                columns_for_df.append(population_columns_for_df)
             if "WIMD" in major_grouping_column_data_df:
                 # Same here but with the WIMD data
-                columns_for_df.append(
-                    wimd_columns_for_df
-                )
+                columns_for_df.append(wimd_columns_for_df)
             if "FPP" in major_grouping_column_data_df:
                 # And again with the FPP data
-                columns_for_df.append(
-                    fpp_columns_for_df
-                )
+                columns_for_df.append(fpp_columns_for_df)
             # And I thought this was useful but couldn't fit it into any other larger group
             if "Rural-Urban" in major_grouping_column_data_df:
-                columns_for_df.append(
-                    rural_columns_for_df
-                )
+                columns_for_df.append(rural_columns_for_df)
             if len(columns_for_df) != 0:
                 # when you append arrays, you end up with arrays within arrays. This handy bit of code flattens arrays.
                 columns_for_df = list(chain(*columns_for_df))
@@ -496,15 +551,15 @@ def streamlit_wimd():
                     "LSOA name (1)",
                     "LA name",
                     "Region",
-                    # Note: If you leave this in, when you select Rural-Urban it expects these columns twice! So that is why it errored out. 
-                    # You have two options, if you aren't too bothered about "Rural-Urban"/"Rural-Urban detailed classification" being in every dataframe produced, delete. 
+                    # Note: If you leave this in, when you select Rural-Urban it expects these columns twice! So that is why it errored out.
+                    # You have two options, if you aren't too bothered about "Rural-Urban"/"Rural-Urban detailed classification" being in every dataframe produced, delete.
                     # Otherwise you can make an elif statement for specifically the urban one (working example below).
                     "Rural-Urban",
                     "Rural-Urban detailed classification",
                     "WIMD decile",
                     "Foundation phase performance",
                 ]
-            elif 'Rural-Urban' in major_grouping_column_data_df:
+            elif "Rural-Urban" in major_grouping_column_data_df:
                 selections_for_dataframe = [
                     "LSOA name (1)",
                     "LA name",
