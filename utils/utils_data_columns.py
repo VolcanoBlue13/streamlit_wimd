@@ -93,7 +93,6 @@ fpp_columns = ["Foundation phase (mean difference)"]
 rural_columns = [
     "Rural-Urban",
     "Rural-Urban detailed classification",
-    "Rural/ Urban Settlement Classification (RU) Name",
 ]
 
 population_columns_for_df = [
@@ -175,7 +174,7 @@ wimd_columns_for_df = [
     "WIMD physical environment domain - population weighted average concentration value for particulates <2.5μm",
     "WIMD physical environment domain - households at risk of flooding score",
     "WIMD physical environment domain - proximity to accessible natural green space score (percentage of households)",
-    # Note: Is this supposed to be here? given the variable above? 
+    # Note: Is this supposed to be here? given the variable above?
     # "wimd_physical_environment_domain_proximity_to_accessible_natural_green_space_score_percentage_of_households",
     "WIMD physical environment domain - ambient green space score",
     "WIMD community safety domain deciles",
