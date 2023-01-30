@@ -80,7 +80,7 @@ def streamlit_wimd():
             column_data_to_plot = fpp_columns
             # And I thought this was useful but couldn't fit it into any other larger group
         elif major_grouping_column_data == "Rural-Urban":
-            column_data_to_plot = rural_columns
+            column_data_to_plot = ["Rural-Urban", "Rural-Urban detailed classification"]
 
         # This creates a drop down list to then select the column you want to plot. The list is retrieved from the code above.
         column_selection = st.selectbox(
