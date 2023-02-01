@@ -188,7 +188,6 @@ wimd_columns_for_df = [
 
 fpp_columns_for_df = [
     "Foundation phase (mean difference)",
-    "Foundation phase performance",
 ]
 
 rural_columns_for_df = ["Rural-Urban", "Rural-Urban detailed classification"]
