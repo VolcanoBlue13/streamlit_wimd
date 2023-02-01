@@ -504,7 +504,7 @@ def streamlit_wimd():
                 }
             )
             # This is an empty dataframe so we can add column selection choices to it.
-            submit_button = st.form_submit_button(label="Run")
+            submit_button = st.form_submit_button(label="Select")
         with st.form(key="Selecting columns"):
             columns_for_df = []
             # Note: Put the long lists of variables in utils/utils_data_columns
@@ -543,7 +543,7 @@ def streamlit_wimd():
                 "Optional region filter", region_filter_df
             )
             ## Using the list of columns, which is selected from the bigger group selection, they can select a number of columns to preview.
-            submit_button = st.form_submit_button(label="Run")
+            submit_button = st.form_submit_button(label="Select")
 
             ## If they haven't selected anything, we still want a dataframe to appear.
             if len(selections_for_dataframe) == 0:
@@ -612,6 +612,7 @@ def streamlit_wimd():
                 )  # Reset the index so it's not weirdly numbered
 
         # st.dataframe produces an interactive dataframe and then I've applied styling which means it's red if fpp_performance is underperforming and green if it's overperforming.
+        st.experimental_singleton.clear()
         st.dataframe(
             dataframe_to_plot[selections_for_dataframe].style.apply(
                 performance_colour, axis=1
@@ -643,7 +644,7 @@ def streamlit_wimd():
                 "Pick two or more variables to plot in a correlation matrix",
                 vars_for_matrix,
             )
-            submit_button = st.form_submit_button(label="Run")
+            submit_button = st.form_submit_button(label="Select")
             selected_data_for_matrix_copy = selected_data_for_matrix.copy()
             rows = []
             for e1 in selected_data_for_matrix:
