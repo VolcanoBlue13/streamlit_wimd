@@ -18,22 +18,24 @@ import os
 
 # -
 
-
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode("utf-8")
-
-
 current_dir = os.getcwd()
+
+# here we load the favicon and we set the page config (so what appears in the tab on your web browser)
+im = Image.open(f"{current_dir}/images/favicon.ico")
+st.set_page_config(page_title="Welsh IMD analysis", layout="wide", page_icon=im)
+
+
+
 alt.themes.register("nestafont", nestafont)
 alt.themes.enable("nestafont")
 
 colours = NESTA_COLOURS
 
-# here we load the favicon and we set the page config (so what appears in the tab on your web browser)
-im = Image.open(f"{current_dir}/images/favicon.ico")
-st.set_page_config(page_title="Welsh IMD analysis", layout="wide", page_icon=im)
+
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode("utf-8")
 
 # this creates a separate container for us to put the header in
 header = st.container()
